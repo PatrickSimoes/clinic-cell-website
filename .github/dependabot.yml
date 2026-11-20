@@ -1,0 +1,22 @@
+# Atualizações automáticas (uma vez por mês, agrupadas). Cada pull request passa pelas
+# mesmas verificações do deploy (lint, build, verify) antes de ir para a main.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      # Correções e versões menores juntas; versões maiores chegam em pull requests separados.
+      dependencias:
+        patterns: ['*']
+        update-types: ['minor', 'patch']

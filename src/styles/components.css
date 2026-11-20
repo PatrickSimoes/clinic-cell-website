@@ -1,0 +1,273 @@
+/* ==========================================================================
+   Componentes: botões, links e ficha (rótulo → valor).
+   ========================================================================== */
+
+/* ---------- Botões ---------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: var(--button-h);
+  padding: var(--space-2) var(--button-pad-x);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+  font-family: var(--font-sans);
+  font-size: var(--fs-button);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease;
+}
+
+/* "Solicitar orçamento" + sublegenda "pelo WhatsApp" */
+.button__label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nudge);
+}
+
+.button__sub {
+  font-size: var(--fs-legal);
+  font-weight: var(--fw-regular);
+  color: var(--button-sub-color, currentColor);
+}
+
+.button--primary {
+  background: var(--color-blue);
+  color: var(--color-on-field);
+  --button-sub-color: var(--color-on-field-2);
+}
+
+.button--primary:active {
+  background: var(--color-blue-night);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+/* WhatsApp: todo botão que abre a conversa é verde */
+.button--whatsapp {
+  background: var(--color-whatsapp);
+  color: var(--color-on-field);
+  --button-sub-color: var(--color-on-field);
+}
+
+.button--whatsapp:active {
+  background: var(--color-whatsapp-night);
+}
+
+.button--small {
+  min-height: var(--target);
+  padding-inline: var(--space-4);
+  font-size: var(--fs-small);
+}
+
+.button--block {
+  width: 100%;
+}
+
+@media (hover: hover) {
+  .button--primary:hover {
+    background: var(--color-blue-deep);
+  }
+
+  .button--primary:active {
+    background: var(--color-blue-night);
+  }
+
+  .button--secondary:hover {
+    background: var(--color-paper-2);
+  }
+
+  .button--whatsapp:hover {
+    background: var(--color-whatsapp-deep);
+  }
+
+  .button--whatsapp:active {
+    background: var(--color-whatsapp-night);
+  }
+}
+
+/* ---------- Links ---------- */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--button-h);
+  color: var(--color-ink);
+  font-size: var(--fs-button);
+  font-weight: var(--fw-medium);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+.text-link .icon {
+  color: var(--color-blue);
+}
+
+.link {
+  color: var(--link-color, var(--color-blue));
+  font-weight: var(--fw-medium);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+/* WhatsApp: todo link que abre a conversa é verde (o claro sobre o campo azul) */
+.link--whatsapp,
+.link--whatsapp .icon {
+  color: var(--whatsapp-link-color, var(--color-whatsapp));
+}
+
+.link .icon {
+  display: inline-block;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  margin-left: var(--space-1);
+  vertical-align: -0.125em;
+}
+
+/* Alvo de toque ampliado sem mudar a altura da linha: o padding amplia o alvo e a margem
+   negativa devolve o espaço. Cresce para baixo (11 px) e quase nada para cima (2 px): esses
+   links vêm logo abaixo de outro texto (endereço, rótulo da ficha), e um alvo que subisse
+   capturaria toques dados nele. Resultado: ~38 px de altura (2.5.8 AA).
+   inline-block: se o link quebrar em duas linhas (fonte muito ampliada em tela estreita), o
+   anel de foco contorna as duas, em vez de virar um retângulo que corta o texto. */
+.link--tap {
+  position: relative;
+  display: inline-block;
+  margin-block: -0.125rem -0.6875rem;
+  padding-block: 0.125rem 0.6875rem;
+}
+
+/* O anel de foco abraça o texto, não o alvo ampliado: fica a 3 px da caixa dos glifos (pode
+   tocar de leve as descendentes da linha de cima) e não pousa no fio da ficha. Mesma espessura
+   e afastamento do :focus-visible padrão (3 px + 3 px). */
+.link--tap:focus-visible {
+  outline: none;
+}
+
+.link--tap:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: calc(0.125rem - 3px) -3px calc(0.6875rem - 3px); /* reserva, sem a unidade lh */
+  /* Como inline-block, a caixa é a linha inteira: tira a meia entrelinha de cada lado.
+     0.651em = metade da área de conteúdo da DM Sans (1,302em). Forma achatada de propósito:
+     (1lh - 1.302em) / 2 derruba o build do Vite. */
+  inset: calc(0.125rem - 3px + 0.5lh - 0.651em) -3px calc(0.6875rem - 3px + 0.5lh - 0.651em);
+  outline: 3px solid var(--color-focus);
+  pointer-events: none;
+}
+
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-blue);
+  font-weight: var(--fw-medium);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-align: start; /* o <button> centraliza o texto por padrão */
+  cursor: pointer;
+}
+
+.text-button .icon {
+  width: var(--icon-link);
+  height: var(--icon-link);
+}
+
+/* Invólucro estável do ícone (ver CopyAddressButton): não altera o layout */
+.text-button__icon {
+  display: contents;
+}
+
+/* Rótulos empilhados no mesmo lugar (ver CopyAddressButton): a largura é a do maior, então a
+   troca entre eles não muda o tamanho do botão. O inativo fica oculto e fora do nome acessível. */
+.text-button__rotulos {
+  display: grid;
+  justify-items: start;
+}
+
+.text-button__rotulos > * {
+  grid-area: 1 / 1;
+}
+
+.text-button__rotulos > .is-inativo {
+  visibility: hidden;
+}
+
+@media (hover: hover) {
+  .text-link:hover,
+  .link:hover,
+  .text-button:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* ---------- Ficha (<dl>): rótulo ao lado do valor quando há espaço ---------- */
+.ficha {
+  container-type: inline-size;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.ficha__row {
+  display: grid;
+  align-items: start;
+  gap: var(--space-1);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-rule);
+}
+
+.ficha__term {
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--fs-data) * var(--lh-data));
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-data-label);
+  font-weight: var(--fw-medium);
+  line-height: var(--label-h);
+  letter-spacing: var(--tracking-data);
+  text-transform: uppercase;
+  color: var(--color-ink-2);
+}
+
+.ficha__term .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  color: var(--color-blue);
+}
+
+.ficha__value {
+  font-size: var(--fs-data);
+  line-height: var(--lh-data);
+  text-wrap: pretty;
+}
+
+.ficha__note {
+  display: block;
+  color: var(--color-ink-2);
+}
+
+@container (min-width: 26rem) {
+  .ficha__row {
+    grid-template-columns: var(--ficha-term-w) minmax(0, 1fr);
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+  }
+}

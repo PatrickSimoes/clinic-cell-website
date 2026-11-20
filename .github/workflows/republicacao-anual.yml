@@ -1,0 +1,30 @@
+name: Republicação anual
+
+# Todo começo de ano, refaz o site para atualizar o ano do copyright e a régua "2011 → hoje"
+# no HTML publicado. (No navegador, o ano já é corrigido sozinho depois da virada.)
+#
+# Fica separado do deploy de propósito: em repositórios públicos sem atividade por 60 dias,
+# o GitHub desativa workflows com agendamento. Assim, só este é desativado — nunca a
+# publicação a cada push. Para reativar: Actions > "Republicação anual" > Enable workflow.
+on:
+  schedule:
+    # 06:23 UTC (03:23 em Brasília), de 1 a 3 de janeiro: o minuto "quebrado" foge do pico
+    # do início da hora, e três tentativas cobrem um agendamento atrasado ou descartado.
+    - cron: '23 6 1-3 1 *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  republicar:
+    name: Disparar a publicação
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Rodar "Publicar no GitHub Pages" na main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run deploy.yml --ref main

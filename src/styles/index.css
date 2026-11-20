@@ -1,0 +1,25 @@
+/* ==========================================================================
+   ClinicCell — folha de estilos (ordem importa: tokens → base → componentes → seções)
+   Design system: docs/design-system.md
+   ========================================================================== */
+
+@import './font-fallbacks.css';
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './circuit.css';
+@import './components.css';
+
+@import './sections/header.css';
+@import './sections/hero.css';
+@import './sections/highlights.css';
+@import './sections/services.css';
+@import './sections/about.css';
+@import './sections/differentials.css';
+@import './sections/location.css';
+@import './sections/faq.css';
+@import './sections/cta.css';
+@import './sections/footer.css';
+@import './sections/whatsapp-flutuante.css';
+@import './sections/menu.css';
+@import './sections/not-found.css';

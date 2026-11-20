@@ -1,0 +1,208 @@
+/* ==========================================================================
+   Hero + plano da marca (o azul do campo da logo, com o lockup branco)
+   ========================================================================== */
+
+.hero {
+  overflow-x: hidden; /* fallback de clip */
+  overflow-x: clip; /* recorta o sangramento do plano azul sem criar contêiner de rolagem */
+  --hero-pad-top: var(--space-10);
+  --spine-top: calc(var(--hero-pad-top) + var(--label-h) / 2);
+}
+
+.hero__content {
+  padding-block: var(--hero-pad-top) var(--space-12);
+}
+
+.hero__label {
+  --section-label-color: var(--color-ink);
+}
+
+.hero__label-sep {
+  display: none;
+}
+
+.hero__label-city {
+  display: block;
+}
+
+.hero__title {
+  margin-top: var(--space-5);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.hero__lead {
+  margin-top: var(--space-5);
+  max-width: var(--measure-lead);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+.hero__actions {
+  display: grid;
+  justify-items: start;
+  margin-top: var(--space-8);
+}
+
+.hero__cta {
+  width: 100%;
+}
+
+.hero__note {
+  margin-top: var(--space-3);
+  font-size: var(--fs-small);
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+.hero__secondary {
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 48em) {
+  .hero__actions {
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      'cta secondary'
+      'note note';
+    justify-content: start;
+    align-items: center;
+    column-gap: var(--space-8);
+  }
+
+  .hero__cta {
+    grid-area: cta;
+    width: auto;
+  }
+
+  .hero__secondary {
+    grid-area: secondary;
+    margin-top: 0;
+  }
+
+  .hero__note {
+    grid-area: note;
+  }
+
+  .hero__label-sep,
+  .hero__label-city {
+    display: inline;
+  }
+}
+
+/* ---------- Plano da marca ---------- */
+.brand-plate {
+  position: relative;
+  margin-inline: calc(-1 * var(--margin));
+  padding: var(--space-10) var(--margin);
+  background: var(--color-field);
+  color: var(--color-on-field);
+  overflow: hidden;
+}
+
+.brand-plate__traces {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.brand-plate__traces path {
+  fill: none;
+  stroke: var(--color-trace-faint);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.brand-plate__traces circle {
+  fill: var(--color-field);
+  stroke: var(--color-trace-faint);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.brand-plate__traces-low {
+  display: none;
+}
+
+/* Abaixo de 1024, as trilhas mantêm a geometria aprovada em 390 px (canto superior direito)
+   em vez de escalar com o plano: assim nunca encostam na logo. */
+@media (max-width: 63.99875em) {
+  .brand-plate__traces {
+    inset: 0 0 auto auto;
+    width: min(100%, 24.375rem);
+    height: auto;
+    aspect-ratio: 640 / 820;
+  }
+}
+
+.brand-plate__logo-area {
+  position: relative;
+}
+
+.brand-plate__logo {
+  width: var(--logo-plate-w);
+}
+
+@media (min-width: 64em) {
+  .hero {
+    --hero-pad-top: var(--space-22);
+  }
+
+  .hero__grid {
+    align-items: stretch;
+  }
+
+  .hero__content {
+    grid-column: 1 / span 7;
+    padding-bottom: var(--space-22);
+  }
+
+  .brand-plate {
+    grid-column: 8 / -1;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: var(--space-14) 0 var(--space-14) var(--space-14);
+    background: none;
+    overflow: visible;
+  }
+
+  /* o plano sangra até a borda direita da janela */
+  .brand-plate::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(-1 * (var(--mr) + var(--bleed))) 0 0;
+    background: var(--color-field);
+  }
+
+  .brand-plate__traces {
+    width: calc(100% + var(--mr) + var(--bleed));
+  }
+
+  .brand-plate__logo-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Entre 1024 e 1199 o plano é estreito: a trilha "mid" passaria rente à logo */
+@media (min-width: 64em) and (max-width: 74.99875em) {
+  .brand-plate__traces-mid {
+    display: none;
+  }
+}
+
+/* O grupo "low" só a partir de 1280 */
+@media (min-width: 80em) {
+  .brand-plate__traces-low {
+    display: inline;
+  }
+}

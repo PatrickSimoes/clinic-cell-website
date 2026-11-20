@@ -1,0 +1,40 @@
+/* ==========================================================================
+   Botão fixo do WhatsApp (celular): barra de largura total na parte de baixo da tela,
+   na zona do polegar. Aparece depois do botão principal do hero e some no CTA final e
+   no rodapé. Sem JavaScript, nunca aparece (o WhatsApp continua em vários pontos da página).
+   ========================================================================== */
+
+.whatsapp-fab {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--z-fab);
+  padding: var(--space-3) var(--margin) calc(var(--space-3) + var(--fab-bottom));
+  background: var(--color-paper);
+  border-top: 1px solid var(--color-rule);
+  transform: translateY(100%);
+  visibility: hidden;
+  transition:
+    transform var(--dur-fab) var(--ease-out),
+    visibility 0s linear var(--dur-fab);
+}
+
+.whatsapp-fab[data-visible='true'] {
+  transform: none;
+  visibility: visible;
+  transition: transform var(--dur-fab) var(--ease-out);
+}
+
+/* Altura útil muito pequena (zoom de 300–400%): a barra some; o WhatsApp continua acessível
+   em vários pontos da página. No desktop, o header fixo já tem o WhatsApp. */
+@media (max-height: 20em) {
+  .whatsapp-fab {
+    display: none;
+  }
+}
+
+@media (min-width: 64em) {
+  .whatsapp-fab {
+    display: none;
+  }
+}

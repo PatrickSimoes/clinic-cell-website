@@ -1,0 +1,126 @@
+/* ==========================================================================
+   Header — fixo no topo em todas as larguras: 72 px no celular, 80 px a partir de 1024.
+   Em telas muito baixas (zoom de 300–400%) ele volta a rolar com a página.
+   ========================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  min-height: var(--header-h);
+}
+
+.site-header__brand {
+  display: block;
+  flex-shrink: 0; /* a logo nunca encolhe nem achata, mesmo num header apertado */
+  margin-right: auto;
+  padding-block: var(--space-1);
+}
+
+.site-header__logo {
+  width: auto;
+  height: var(--logo-header-h);
+}
+
+.site-header__nav,
+.site-header__cta {
+  display: none;
+}
+
+.site-header__menu {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--button-h-compact);
+  margin-right: calc(-1 * var(--space-3));
+  padding-inline: var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  font-size: var(--fs-button);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.site-header__menu--fallback {
+  display: none;
+}
+
+/* Até o React assumir a página (ou sem JavaScript), o botão vira link para a navegação
+   do rodapé — mesmo visual e mesma caixa, então a troca não desloca nada. */
+:where(html:not(.is-hydrated)) .site-header__menu {
+  display: none;
+}
+
+:where(html:not(.is-hydrated)) .site-header__menu--fallback {
+  display: inline-flex;
+}
+
+/* O header fixo fica dentro da faixa do scroll-padding-top (base.css): sem isto, cada foco num
+   link ou botão dele (Shift+Tab, foco devolvido) rolaria a página para trazê-lo "à tela". */
+.site-header :is(a, button) {
+  scroll-margin-top: calc(-1 * var(--scroll-top));
+  scroll-margin-bottom: var(--scroll-top);
+}
+
+/* Altura útil muito pequena (zoom de 300–400%): fixo, o header tomaria um terço da tela. */
+@media (max-height: 20em) {
+  .site-header {
+    position: relative;
+  }
+
+  .site-header :is(a, button) {
+    scroll-margin: 0;
+  }
+}
+
+@media (min-width: 64em) {
+  .site-header__brand {
+    margin-left: var(--axis);
+  }
+
+  .site-header__nav {
+    display: block;
+  }
+
+  .site-header__nav-list {
+    display: flex;
+    gap: clamp(1.125rem, 2.2vw, 2.25rem);
+  }
+
+  .site-header__nav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+  }
+
+  .site-header__cta {
+    display: inline-flex;
+    margin-left: clamp(var(--space-2), 1.5vw, var(--space-6));
+  }
+
+  .site-header__menu,
+  :where(html:not(.is-hydrated)) .site-header__menu--fallback {
+    display: none;
+  }
+}
+
+@media (min-width: 64em) and (hover: hover) {
+  .site-header__nav-link:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.4em;
+  }
+}

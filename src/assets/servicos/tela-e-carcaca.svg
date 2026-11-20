@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300" role="img" aria-label="Ilustração: celular com a tela trincada e uma tela nova ao lado">
+<rect width="480" height="300" fill="#EEF4FB"/>
+<g fill="none" stroke="#C6D7EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M0 56H40L64 80V112"/><path d="M0 244H36L56 224H76"/><path d="M480 60H452L432 80V104"/><path d="M480 240H420"/></g>
+<g fill="#EEF4FB" stroke="#C6D7EC" stroke-width="2"><circle cx="64" cy="118" r="5"/><circle cx="82" cy="224" r="5"/><circle cx="432" cy="110" r="5"/><circle cx="414" cy="240" r="5"/></g>
+<rect x="108" y="34" width="124" height="232" rx="22" fill="#FFFFFF" stroke="#0750A5" stroke-width="3"/>
+<rect x="118" y="46" width="104" height="208" rx="13" fill="#0B356A"/>
+<rect x="156" y="53" width="28" height="4" rx="2" fill="#2A5B95"/>
+<g fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".9">
+  <path d="M184 104 160 80 150 62"/>
+  <path d="M184 104 214 92"/>
+  <path d="M184 104 196 132 190 160 202 196"/>
+  <path d="M184 104 150 118 128 112"/>
+  <path d="M184 104 166 140 140 158"/>
+  <path d="M196 132 218 142"/>
+  <path d="M190 160 172 176"/>
+  <circle cx="184" cy="104" r="4"/>
+</g>
+<g transform="rotate(8 326 151)">
+  <rect x="266" y="40" width="120" height="222" rx="21" fill="#FFFFFF" stroke="#0750A5" stroke-width="3"/>
+  <rect x="276" y="52" width="100" height="198" rx="12" fill="#DCE8F8"/>
+  <rect x="312" y="59" width="28" height="4" rx="2" fill="#B9CDE8"/>
+  <path d="M290 132 344 78" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+  <path d="M296 162 360 98" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+</g>
+<g stroke="#0750A5" stroke-linecap="round">
+  <path d="M410 172v18M401 181h18" stroke-width="2.5"/>
+  <path d="M392 222v12M386 228h12" stroke-width="2"/>
+</g>
+</svg>

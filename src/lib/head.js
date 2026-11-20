@@ -1,0 +1,71 @@
+/**
+ * Monta as tags do <head> de cada página: title, description, canonical,
+ * Open Graph, ícones, manifest e dados estruturados.
+ *
+ * É executado no build (pré-renderização) e no `npm run dev`, nunca no navegador.
+ */
+import { site } from '../config/site.js';
+import { seo } from '../content/seo.js';
+import { buildStructuredData, ogImageUrl as buildOgImageUrl } from './structured-data.js';
+
+/** Escapa texto para uso em atributos e conteúdo HTML. */
+function esc(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/** JSON seguro dentro de <script>: impede o fechamento prematuro da tag. */
+function safeJson(data) {
+  // "<" vira a sequência de escape JSON u003c precedida de barra invertida (6 caracteres),
+  // que o parser JSON lê de volta como "<". Evita que o conteúdo feche a tag <script>.
+  const escapedLessThan = String.fromCharCode(92) + 'u003c';
+  return JSON.stringify(data).replaceAll('<', escapedLessThan);
+}
+
+/**
+ * @param {'home' | '404'} page
+ * @param {{ siteUrl: string, base: string, ogImageVersion?: string }} deploy
+ *   URL absoluta da raiz (com barra final), base path e, no build, o hash da og-image.
+ * @returns {string} HTML das tags do <head>
+ */
+export function renderHead(page, { siteUrl, base, ogImageVersion }) {
+  const isHome = page === 'home';
+  const meta = isHome ? seo.home : seo.notFound;
+  const ogImageUrl = buildOgImageUrl(siteUrl, ogImageVersion);
+
+  const tags = [
+    `<title>${esc(meta.title)}</title>`,
+    `<meta name="description" content="${esc(meta.description)}">`,
+    isHome
+      ? `<link rel="canonical" href="${esc(siteUrl)}">`
+      : null,
+    `<meta name="robots" content="${isHome ? 'index, follow, max-image-preview:large' : 'noindex, follow'}">`,
+    `<meta name="theme-color" content="${esc(seo.themeColor)}">`,
+    `<meta name="color-scheme" content="light">`,
+    `<meta name="format-detection" content="telephone=no">`,
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:locale" content="pt_BR">`,
+    `<meta property="og:site_name" content="${esc(site.nome)}">`,
+    `<meta property="og:title" content="${esc(meta.title)}">`,
+    `<meta property="og:description" content="${esc(meta.description)}">`,
+    isHome ? `<meta property="og:url" content="${esc(siteUrl)}">` : null,
+    `<meta property="og:image" content="${esc(ogImageUrl)}">`,
+    `<meta property="og:image:type" content="image/jpeg">`,
+    `<meta property="og:image:width" content="${seo.ogImage.width}">`,
+    `<meta property="og:image:height" content="${seo.ogImage.height}">`,
+    `<meta property="og:image:alt" content="${esc(seo.ogImage.alt)}">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<link rel="icon" href="${base}favicon.ico" sizes="48x48">`,
+    `<link rel="icon" href="${base}favicon-96.png" type="image/png" sizes="96x96">`,
+    `<link rel="apple-touch-icon" href="${base}apple-touch-icon.png">`,
+    `<link rel="manifest" href="${base}site.webmanifest">`,
+    isHome
+      ? `<script type="application/ld+json">${safeJson(buildStructuredData({ pageUrl: siteUrl, siteUrl, ogImageVersion }))}</script>`
+      : null,
+  ];
+
+  return tags.filter(Boolean).join('\n    ');
+}

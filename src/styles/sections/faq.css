@@ -1,0 +1,76 @@
+/* ==========================================================================
+   Dúvidas frequentes — perguntas em linhas com fio, abrem e fecham (<details>)
+   ========================================================================== */
+
+/* No celular as duas colunas são uma lista só, fechada por um fio embaixo */
+.faq__list {
+  margin-top: var(--space-8);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.faq__item {
+  border-top: 1px solid var(--color-rule);
+}
+
+.faq__question {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--target);
+  padding-block: var(--space-5);
+  font-size: var(--fs-lead);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  text-wrap: balance;
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq__question::-webkit-details-marker {
+  display: none;
+}
+
+/* "+" que vira "×" quando a resposta está aberta */
+.faq__toggle {
+  flex: none;
+  width: var(--icon-diff);
+  height: var(--icon-diff);
+  margin-top: calc((var(--fs-lead) * var(--lh-snug) - var(--icon-diff)) / 2);
+  color: var(--color-blue);
+  transition: transform var(--dur-fast) ease;
+}
+
+.faq__item[open] .faq__toggle {
+  transform: rotate(45deg);
+}
+
+.faq__answer {
+  max-width: var(--measure-text);
+  padding-right: calc(var(--icon-diff) + var(--space-4));
+  padding-bottom: var(--space-6);
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+@media (hover: hover) {
+  .faq__question:hover {
+    color: var(--color-blue);
+  }
+}
+
+/* Computador: duas colunas independentes, cada uma fechada pelo seu fio de baixo */
+@media (min-width: 64em) {
+  .faq__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    column-gap: var(--space-12);
+    margin-top: var(--space-10);
+    border-bottom: 0;
+  }
+
+  .faq__col {
+    border-bottom: 1px solid var(--color-rule);
+  }
+}

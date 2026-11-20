@@ -1,0 +1,97 @@
+/* ==========================================================================
+   Menu (celular): diálogo de tela cheia com o sumário
+   ========================================================================== */
+
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-paper);
+}
+
+.menu[hidden] {
+  display: none;
+}
+
+.menu > .container {
+  width: 100%;
+}
+
+.menu__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--header-h);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.menu__logo {
+  width: auto;
+  height: var(--logo-header-h);
+}
+
+.menu__close {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--button-h-compact);
+  margin-right: calc(-1 * var(--space-3));
+  padding-inline: var(--space-3);
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-button);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+}
+
+.menu__label {
+  margin-top: var(--space-7);
+}
+
+.menu__list {
+  margin-top: var(--space-2);
+}
+
+.menu__item {
+  position: relative;
+}
+
+/* Trilha do sumário ligando os terminais */
+.menu__item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: calc((var(--pad-size) - var(--trace-w)) / 2);
+  top: 50%;
+  width: var(--trace-w);
+  height: 100%;
+  background: var(--color-trace);
+}
+
+.menu__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--menu-row-h);
+  font-size: var(--fs-menu);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-menu);
+  text-decoration: none;
+}
+
+.menu__foot {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-block: var(--space-8) calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+
+.menu__address {
+  margin-top: var(--space-1);
+  font-size: var(--fs-small);
+  color: var(--color-ink-2);
+}

@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Serviços — linhas de tabela, sem cards: uma linha por área, com a imagem da área
+   e a lista dos serviços
+   ========================================================================== */
+
+.services__table-head {
+  display: none;
+}
+
+.services__list {
+  margin-top: var(--space-8);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+/* Celular: imagem em cima, depois título, serviços e o link */
+.service {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'image'
+    'title'
+    'items'
+    'link';
+  padding-block: var(--space-6) var(--space-2);
+  border-top: 1px solid var(--color-rule);
+}
+
+/* Ilustração (ou foto) da área: proporção fixa, sem salto de layout ao carregar */
+.service__image {
+  grid-area: image;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 480 / 300;
+  object-fit: cover;
+  background: var(--color-paper-2);
+}
+
+.service__title {
+  grid-area: title;
+  margin-top: var(--space-5);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-h3);
+}
+
+.service__items {
+  grid-area: items;
+  margin-top: var(--space-3);
+}
+
+/* cada serviço com um terminal pequeno do circuito, centrado na primeira linha */
+.service__item {
+  position: relative;
+  padding-left: var(--space-5);
+  line-height: var(--lh-data);
+  text-wrap: pretty;
+  break-inside: avoid;
+}
+
+.service__item + .service__item {
+  margin-top: var(--space-1);
+}
+
+.service__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc((1em * var(--lh-data) - 0.4375rem) / 2);
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border: 1.5px solid var(--color-blue);
+  border-radius: 50%;
+}
+
+.service__link {
+  grid-area: link;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target);
+  margin-top: var(--space-2);
+  color: var(--color-whatsapp); /* abre o WhatsApp */
+  font-weight: var(--fw-medium);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.service__link .icon {
+  width: var(--icon-link);
+  height: var(--icon-link);
+  transition: transform var(--dur-fast) ease;
+}
+
+/* a linha inteira é o alvo do link */
+.service__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+@media (hover: hover) {
+  .service {
+    transition:
+      background-color var(--dur-fast) ease,
+      box-shadow var(--dur-fast) ease;
+  }
+
+  .service:hover {
+    background-color: var(--color-paper-2);
+  }
+
+  .service:hover .service__link {
+    text-decoration-thickness: 2px;
+  }
+
+  .service:hover .service__link .icon {
+    transform: translate(var(--nudge), calc(-1 * var(--nudge)));
+  }
+}
+
+@supports selector(:has(a)) {
+  .service:has(.service__link:focus-visible) {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .service__link:focus-visible {
+    outline: none;
+  }
+}
+
+/* "Seu caso não está na lista?": fecha a tabela */
+.services__more {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+}
+
+.services__more-icon {
+  flex: none;
+  width: var(--icon-diff);
+  height: var(--icon-diff);
+  margin-top: calc((var(--target) - var(--icon-diff)) / 2);
+  stroke-width: var(--icon-stroke-content);
+  color: var(--color-blue);
+}
+
+.services__more-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-3);
+}
+
+.services__more-question {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  font-weight: var(--fw-medium);
+}
+
+.services__more .link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+}
+
+/* Tablet: imagem à esquerda; título e link na primeira linha, serviços embaixo */
+@media (min-width: 48em) {
+  .service {
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) auto;
+    grid-template-areas:
+      'image title link'
+      'image items items';
+    grid-template-rows: auto 1fr;
+    column-gap: var(--space-6);
+    align-items: start;
+    padding-block: var(--space-6);
+  }
+
+  .service__title {
+    margin-top: 0;
+    padding-top: calc((var(--target) - var(--fs-h3) * var(--lh-snug)) / 2);
+  }
+
+  .service__link {
+    margin-top: 0;
+  }
+}
+
+/* Desktop: tabela de verdade — imagem · área · serviços · orçamento */
+@media (min-width: 64em) {
+  .services .section-label,
+  .services .section-title {
+    grid-column: 1 / span 7;
+  }
+
+  .services__intro {
+    grid-column: 9 / -1;
+    grid-row: 2;
+    align-self: end;
+    margin-top: 0;
+  }
+
+  /* cabeçalho e linhas são grades separadas: a última coluna tem largura fixa (cabe o
+     "Pedir orçamento ↗") para o 3fr e o 5fr darem o mesmo resultado nas duas */
+  .services__table-head,
+  .service {
+    grid-template-columns: minmax(0, 12rem) minmax(0, 3fr) minmax(0, 5fr) 10.5rem;
+    column-gap: var(--space-6);
+  }
+
+  .services__table-head {
+    display: grid;
+    margin-top: var(--space-14);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--fs-data-label);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tracking-data);
+    text-transform: uppercase;
+    color: var(--color-ink-2);
+  }
+
+  .services__th-action,
+  .service__link {
+    justify-self: end;
+  }
+
+  .services__list {
+    margin-top: 0;
+  }
+
+  .services__list > .service:first-child {
+    border-top: 0;
+  }
+
+  .service {
+    grid-template-areas: 'image title items link';
+    grid-template-rows: auto;
+    padding-block: var(--space-7);
+  }
+
+  .service__items {
+    margin-top: 0;
+    padding-top: calc((var(--target) - 1em * var(--lh-data)) / 2);
+  }
+}
+
+/* com a imagem ao lado, duas colunas de serviços só a partir de 1280 */
+@media (min-width: 80em) {
+  .service__items {
+    columns: 2;
+    column-gap: var(--space-6);
+  }
+
+  .service__item + .service__item {
+    margin-top: 0;
+  }
+
+  .service__item {
+    padding-bottom: var(--space-1);
+  }
+}
+
+@media (min-width: 64em) and (hover: hover) {
+  .service:hover {
+    box-shadow:
+      calc(-1 * var(--space-4)) 0 0 var(--color-paper-2),
+      var(--space-4) 0 0 var(--color-paper-2);
+  }
+}
+
+/* ---------- Estado vazio (0 serviços publicados) ---------- */
+.services-empty {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-block: var(--space-7) var(--space-8);
+  border-block: 1px solid var(--color-rule);
+  --empty-indent: calc(var(--pad-size) + var(--space-4));
+}
+
+.services-empty__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.services-empty__head .pad {
+  margin-top: calc((var(--fs-h3) * var(--lh-snug) - var(--pad-size)) / 2);
+}
+
+.services-empty__title {
+  max-width: 18.3em; /* ≈ 26ch na DM Sans */
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-h3);
+  text-wrap: balance;
+}
+
+.services-empty__text {
+  max-width: var(--measure-text);
+  padding-left: var(--empty-indent);
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+.services-empty__action {
+  padding-left: var(--empty-indent);
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 64em) {
+  .services-empty {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--space-12);
+    margin-top: var(--space-14); /* mesmo ritmo do cabeçalho da tabela (título → conteúdo) */
+  }
+
+  .services-empty__action {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin-top: 0;
+  }
+}

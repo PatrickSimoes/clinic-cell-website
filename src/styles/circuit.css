@@ -1,0 +1,77 @@
+/* ==========================================================================
+   Motivo de circuito (inspirado nas trilhas do fundo da logo).
+   Regra: a trilha sempre LIGA marcadores — nunca é textura em seções brancas.
+   Usos: espinha (≥ 1024), portas (< 1024), rótulos de seção, barramento dos
+   Diferenciais, régua do Sobre e sumário do menu.
+   ========================================================================== */
+
+/* Terminal (pad): anel de 2 px; miolo da cor do fundo (aberto) ou sólido */
+.pad {
+  display: block;
+  flex: none;
+  width: var(--pad-size);
+  height: var(--pad-size);
+  border: var(--pad-ring) solid var(--pad-ring-color, var(--color-blue));
+  border-radius: 50%;
+  background: var(--pad-fill, var(--color-paper));
+}
+
+.pad--solid {
+  --pad-fill: var(--pad-ring-color, var(--color-blue));
+}
+
+/* Espinha: trilha contínua na margem esquerda ligando os rótulos das seções */
+@media (min-width: 64em) {
+  .has-spine > .container::before {
+    content: '';
+    position: absolute;
+    top: var(--spine-top, 0);
+    bottom: 0;
+    left: var(--spine-x);
+    width: var(--trace-w);
+    background: var(--spine-color, var(--color-trace));
+  }
+}
+
+/* Rótulo de seção: (porta) (terminal) NOME */
+.section-label {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  line-height: var(--label-h);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--section-label-color, var(--color-ink-2));
+}
+
+.section-label > .pad {
+  position: relative;
+  z-index: 1;
+  margin-top: calc((var(--label-h) - var(--pad-size)) / 2);
+}
+
+/* Porta (abaixo de 1024): a trilha entra pela borda da tela até o terminal */
+.section-label::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: calc((var(--label-h) - var(--trace-w)) / 2);
+  width: var(--ml);
+  height: var(--trace-w);
+  background: var(--port-color, var(--color-trace));
+}
+
+@media (min-width: 64em) {
+  .section-label::before {
+    content: none;
+  }
+
+  .section-label > .pad {
+    position: absolute;
+    left: var(--axis);
+    top: 0;
+  }
+}

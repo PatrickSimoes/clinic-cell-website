@@ -1,0 +1,10 @@
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "void-style": "off",
+    "long-title": ["error", { "maxlength": 70 }],
+    "attr-case": ["error", { "style": ["lowercase", "camelcase"] }],
+    "attribute-empty-style": "off",
+    "no-redundant-role": "off"
+  }
+}

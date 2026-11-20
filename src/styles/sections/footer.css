@@ -1,0 +1,154 @@
+/* ==========================================================================
+   Rodapé (colofão) — a espinha termina num terminal sólido
+   ========================================================================== */
+
+.site-footer {
+  border-top: 1px solid var(--color-rule);
+}
+
+.site-footer > .container {
+  padding-block: var(--space-14) var(--space-7);
+}
+
+.site-footer__logo {
+  width: auto;
+  height: var(--logo-footer-h);
+}
+
+.site-footer__about {
+  margin-top: var(--space-4);
+  max-width: 20.55em; /* ≈ 30ch na DM Sans */
+  font-size: var(--fs-small);
+  line-height: var(--lh-data);
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+.site-footer__col {
+  margin-top: var(--space-8);
+  font-size: var(--fs-small);
+  line-height: var(--lh-body);
+}
+
+.site-footer__heading {
+  margin-bottom: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-data-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-data);
+  text-transform: uppercase;
+  color: var(--color-ink-2);
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+}
+
+.site-footer__nav-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--gap);
+}
+
+.site-footer__nav-link {
+  min-width: var(--target);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+}
+
+.site-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-10);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--fs-legal);
+  color: var(--color-ink-2);
+}
+
+.site-footer__top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target);
+  color: var(--color-ink);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+}
+
+.site-footer__top-link .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.site-footer__terminal {
+  display: none;
+}
+
+@media (hover: hover) {
+  .site-footer__nav-link:hover,
+  .site-footer__top-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+}
+
+@media (min-width: 48em) {
+  .site-footer__col {
+    grid-column: span 3;
+  }
+
+  .site-footer__col--phone {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 64em) {
+  /* a espinha termina num terminal sólido logo abaixo do topo do rodapé */
+  .site-footer > .container::before {
+    bottom: auto;
+    height: calc(var(--space-10) + var(--pad-size) / 2);
+  }
+
+  .site-footer__terminal {
+    display: block;
+    position: absolute;
+    grid-area: auto;
+    left: calc(var(--ml) + var(--axis));
+    top: var(--space-10);
+  }
+
+  .site-footer__brand {
+    grid-column: 1 / span 3;
+  }
+
+  .site-footer__col {
+    grid-column: span 3;
+    margin-top: var(--space-1);
+  }
+
+  .site-footer__col--address {
+    grid-column: 4 / span 4;
+  }
+
+  .site-footer__col--phone {
+    grid-column: 8 / span 2;
+  }
+
+  .site-footer__col--nav {
+    grid-column: 10 / span 3;
+  }
+
+  .site-footer__bottom {
+    grid-column: 1 / -1;
+    margin-top: var(--space-14);
+  }
+}

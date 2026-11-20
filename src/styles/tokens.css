@@ -1,0 +1,191 @@
+/* ==========================================================================
+   Tokens — design system "Folha técnica" (docs/design-system.md)
+   Mobile-first: valores base para o celular; 768 / 1024 ajustam.
+   Fontes: --font-sans e --font-mono vêm de font-fallbacks.css (gerado).
+   ========================================================================== */
+
+:root {
+  /* Cor — marca */
+  --color-field: #003e87; /* campo azul da logo (centro medido): plano da marca e CTA */
+  --color-blue: #0750a5; /* azul de ação: botões, links, ícones, terminais, numerais */
+  --color-blue-deep: #063777; /* hover */
+  --color-blue-night: #002f71; /* active */
+
+  /* Cor — WhatsApp: todo botão ou link que abre a conversa (verde do próprio WhatsApp;
+     branco por cima e verde sobre o branco: 4,89:1) */
+  --color-whatsapp: #008069;
+  --color-whatsapp-deep: #006d59; /* hover */
+  --color-whatsapp-night: #005c4b; /* active */
+  --color-whatsapp-on-field: #25d366; /* links do WhatsApp sobre o campo azul: 5,19:1 */
+
+  /* Cor — neutros */
+  --color-ink: #172b45;
+  --color-ink-2: #4a5a70;
+  --color-paper: #ffffff;
+  --color-paper-2: #f5f8fc;
+  --color-rule: #d3dce8;
+
+  /* Cor — sobre o campo azul */
+  --color-on-field: #ffffff;
+  --color-on-field-2: #d6e4f7;
+
+  /* Cor — estados */
+  --color-focus: var(--color-blue);
+
+  /* Cor — motivo de circuito (decorativo, sempre aria-hidden) */
+  --color-trace: #b9cbe3;
+  --color-trace-on-field: #4f7dbd;
+  --color-trace-faint: #1c539a;
+
+  /* Tipografia */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fs-numeral: min(52vw, 25rem); /* "2011" */
+  --fs-number: clamp(5.25rem, 3.6rem + 8vw, 10rem); /* "2884" */
+  --fs-h1: clamp(2.25rem, 1.179rem + 5.357vw, 6rem); /* 36 → 96 */
+  --fs-display: clamp(2rem, 1.083rem + 4.63vw, 5.25rem); /* 32 → 84 */
+  --fs-h2: clamp(1.875rem, 1.333rem + 2.407vw, 3.5rem); /* 30 → 56 */
+  --fs-h3: clamp(1.25rem, 1.167rem + 0.37vw, 1.5rem); /* 20 → 24 */
+  --fs-stand: clamp(1.25rem, 1.083rem + 0.741vw, 1.75rem); /* 20 → 28 */
+  --fs-lead: clamp(1.125rem, 1.042rem + 0.37vw, 1.375rem); /* 18 → 22 */
+  --fs-body: clamp(1.0625rem, 1.042rem + 0.093vw, 1.125rem); /* 17 → 18 */
+  --fs-menu: 1.75rem;
+  --fs-button: 1.0625rem;
+  --fs-data: 1.0625rem;
+  --fs-small: 0.9375rem;
+  --fs-legal: 0.875rem;
+  --fs-label: 0.8125rem;
+  --fs-data-label: 0.75rem;
+  --fs-kicker: clamp(0.875rem, 0.8rem + 0.3vw, 1.125rem);
+  --lh-numeral: 0.8;
+  --lh-display: 1.02;
+  --lh-heading: 1.08;
+  --lh-snug: 1.25;
+  --lh-stand: 1.42;
+  --lh-lead: 1.45;
+  --lh-data: 1.5;
+  --lh-body: 1.6;
+  --lh-tight: 1.2;
+  --tracking-display: -0.018em; /* celular; -.028em a partir de 1024 */
+  --tracking-h2: -0.02em;
+  --tracking-h3: -0.012em;
+  --tracking-numeral: -0.06em;
+  --tracking-menu: -0.02em;
+  --tracking-label: 0.16em;
+  --tracking-kicker: 0.34em;
+  --tracking-data: 0.08em;
+  --tracking-index: 0.04em;
+
+  /* Espaço (base 4 px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-18: 4.5rem;
+  --space-22: 5.5rem;
+  --space-24: 6rem;
+  --section-pad: clamp(4rem, 3rem + 4.444vw, 7rem); /* 64 → 112 */
+
+  /* Layout */
+  --container-max: 90rem;
+  --margin: clamp(1rem, 5.13vw, 4rem); /* 16 → 64 */
+  --ml: var(--margin);
+  --mr: var(--margin);
+  --gap: clamp(1rem, 0.75rem + 1.11vw, 1.5rem); /* 16 → 24 */
+  --bleed: max(0px, (100vw - var(--container-max)) / 2); /* sobra além do container (> 1440 px) */
+  /* Medidas em em (≈ 44ch e 34ch na DM Sans): o "ch" usa o "0" da fonte carregada e mudaria
+     ~19% na troca da fonte de reserva pela DM Sans, deslocando o layout (CLS). */
+  --measure-text: 30.2em;
+  --measure-lead: 23.5em;
+
+  /* Motivo de circuito */
+  --trace-w: 2px;
+  --pad-size: 12px;
+  --pad-ring: 2px;
+  --axis: 0px; /* borda esquerda dos terminais em relação à coluna de texto */
+  --spine-x: calc(var(--ml) + var(--axis) + (var(--pad-size) - var(--trace-w)) / 2);
+  --label-h: 1.5rem;
+  --tick-h: 10px;
+  --cross-size: 14px;
+
+  /* Componentes */
+  --target: 44px;
+  --button-h: 56px;
+  --button-h-compact: 48px; /* botão "Menu" do header e botões do menu */
+  --header-h: 72px;
+  /* Faixa do topo ocupada pelo header fixo: âncoras e foco param abaixo dela (base.css). */
+  --scroll-top: calc(var(--header-h) + var(--space-4));
+  /* Barra fixa do WhatsApp (celular): altura (fio + respiro + botão + respiro) e área segura do
+     iPhone embaixo. Se a barra crescer (fonte ampliada), o FloatingWhatsApp mede e grava a
+     folga de rolagem direto no scroll-padding-bottom do <html>. */
+  --fab-h: calc(
+    1px + 2 * var(--space-3) + 2 * var(--space-2) + 2px + var(--lh-tight) * (var(--fs-button) + var(--fs-legal)) +
+      var(--nudge)
+  ); /* fio + respiro + botão de duas linhas (padding, borda, "Solicitar orçamento" e "pelo WhatsApp") + respiro */
+  --fab-bottom: env(safe-area-inset-bottom, 0px);
+  --menu-row-h: 4rem;
+  --logo-header-h: 44px;
+  --logo-plate-w: min(232px, 60vw); /* o atributo sizes da logo em src/sections/Hero.jsx acompanha este valor */
+  --logo-footer-h: 56px;
+  --icon-ui: 20px;
+  --icon-link: 18px;
+  --icon-sm: 16px;
+  --icon-diff: 24px;
+  --icon-stroke-content: 1.5;
+  --radius-button: 2px;
+  --button-pad-x: var(--space-4);
+  --ficha-term-w: 7.5rem;
+  --radius-photo: 14px;
+  --photo-inset: 8px;
+  --nudge: 2px;
+
+  /* Camadas */
+  --z-header: 30;
+  --z-fab: 40;
+  --z-menu: 50;
+  --z-skip: 60;
+
+  /* Movimento */
+  --dur-fast: 150ms;
+  --dur-fab: 200ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (min-width: 48em) {
+  :root {
+    --button-pad-x: var(--space-6);
+    --fs-numeral: min(40vw, 25rem);
+    --logo-plate-w: 20rem;
+  }
+}
+
+@media (min-width: 64em) {
+  :root {
+    --ml: clamp(6rem, 8.9vw, 8rem); /* margem esquerda larga = coluna das trilhas */
+    --axis: -4.5rem;
+    --header-h: 80px;
+    --scroll-top: calc(var(--header-h) + var(--space-6));
+    --logo-header-h: 52px;
+    --logo-plate-w: clamp(17.5rem, 28vw, 26rem); /* idem: sizes em Hero.jsx */
+    --fs-h1: clamp(4.25rem, 6.7vw, 6rem);
+    --fs-numeral: min(27vw, 25rem);
+    --tracking-display: -0.028em;
+    --tracking-h2: -0.028em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0s;
+    --dur-fab: 0s;
+  }
+}

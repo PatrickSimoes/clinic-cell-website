@@ -1,0 +1,112 @@
+name: Publicar no GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    # Mudanças só na documentação não republicam o site.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  # Pull requests para a main: roda todas as verificações, sem publicar.
+  pull_request:
+    branches: [main]
+  # Publicação manual (aba Actions > "Publicar no GitHub Pages" > Run workflow).
+  # Também é disparado pela republicação anual (republicacao-anual.yml).
+  workflow_dispatch:
+
+# Nenhuma permissão por padrão: cada job pede só o que usa.
+permissions: {}
+
+# Em pull request, um push novo cancela a verificação anterior; na main, as execuções esperam a vez.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build e verificações
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Descobre o endereço público (github.io ou domínio próprio configurado em
+      # Settings > Pages) e o base path ("/nome-do-repo" ou vazio).
+      - name: Configurar GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      # SITE_URL sempre em https: com domínio próprio e "Enforce HTTPS" desligado, o
+      # configure-pages devolveria http://, que iria para canonical, Open Graph e sitemap.
+      # BUILD_YEAR é fixado uma vez: os dois builds do Vite precisam do mesmo ano.
+      - name: Definir endereço e ano do build
+        env:
+          PAGES_HOST: ${{ steps.pages.outputs.host }}
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          {
+            echo "SITE_URL=https://${PAGES_HOST}"
+            echo "BASE_PATH=${PAGES_BASE_PATH}/"
+            echo "BUILD_YEAR=$(TZ=America/Sao_Paulo date +%Y)"
+          } >> "$GITHUB_ENV"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build de produção (com pré-renderização)
+        run: npm run build
+
+      - name: Verificar dados, SEO, links e dados estruturados
+        run: npm run verify
+
+      # QA no navegador (axe, menu, hidratação, fontes...) com o Chrome do runner.
+      # Informativo por enquanto: falhas aparecem no log sem bloquear a publicação.
+      # timeout-minutes: um QA travado não pode estourar o tempo do job e bloquear o deploy.
+      - name: QA no navegador (informativo)
+        continue-on-error: true
+        timeout-minutes: 10
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run qa
+
+      - name: Enviar artefato do site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: Publicar
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    # Um deploy por vez; um novo push não cancela o deploy que já está em andamento.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

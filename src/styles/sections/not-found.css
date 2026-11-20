@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Página 404 — mesmo header e rodapé, bloco com o ritmo do hero, sem plano azul
+   ========================================================================== */
+
+.not-found__content {
+  padding-block: var(--space-10) var(--space-16);
+}
+
+.not-found__label {
+  --section-label-color: var(--color-ink);
+}
+
+.not-found__title {
+  margin-top: var(--space-5);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.not-found__text {
+  margin-top: var(--space-5);
+  max-width: var(--measure-lead);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+.not-found__actions {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+}
+
+.not-found__home {
+  width: 100%;
+}
+
+@media (min-width: 48em) {
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .not-found__home {
+    width: auto;
+  }
+}
+
+@media (min-width: 64em) {
+  .not-found__content {
+    grid-column: 1 / span 9;
+    padding-block: var(--space-22);
+  }
+}

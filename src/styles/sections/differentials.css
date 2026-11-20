@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Diferenciais — itens ligados por um barramento de circuito
+   ========================================================================== */
+
+.diffs__list {
+  position: relative;
+  display: grid;
+  row-gap: var(--space-10);
+  margin-top: var(--space-10);
+}
+
+.diff {
+  position: relative;
+  padding-left: calc(var(--pad-size) + var(--space-6));
+}
+
+.diff__pad {
+  position: absolute;
+  left: 0;
+  top: calc((var(--fs-h3) * var(--lh-snug) - var(--pad-size)) / 2);
+}
+
+/* Barramento vertical (celular): liga cada terminal ao próximo */
+.diff:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: calc((var(--pad-size) - var(--trace-w)) / 2);
+  top: calc(var(--fs-h3) * var(--lh-snug) / 2);
+  width: var(--trace-w);
+  height: calc(100% + var(--space-10));
+  background: var(--color-trace);
+}
+
+/* Ícone alinhado à 1ª linha do título (como o terminal), mesmo quando o título quebra */
+.diff__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.diff__icon {
+  width: var(--icon-diff);
+  height: var(--icon-diff);
+  margin-top: calc((var(--fs-h3) * var(--lh-snug) - var(--icon-diff)) / 2);
+  stroke-width: var(--icon-stroke-content);
+  color: var(--color-blue);
+}
+
+.diff__title {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-h3);
+  text-wrap: balance;
+}
+
+.diff__text {
+  margin-top: var(--space-2);
+  max-width: 26.1em; /* ≈ 38ch na DM Sans; em não muda quando a fonte web chega */
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+.diff__text .link {
+  white-space: nowrap;
+}
+
+@media (min-width: 48em) {
+  .diffs__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gap);
+  }
+
+  .diff:not(:last-child)::before {
+    content: none;
+  }
+
+  /* Na grade, cada item usa duas linhas da lista (subgrid): os títulos da mesma fileira têm a
+     mesma altura e os textos começam juntos, mesmo quando só um título quebra. Sem suporte a
+     subgrid, cada item segue sozinho, como antes. */
+  @supports (grid-template-rows: subgrid) {
+    .diff {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      row-gap: 0;
+    }
+  }
+}
+
+@media (min-width: 64em) {
+  .diffs__title {
+    grid-column: 1 / span 7;
+  }
+
+  /* introdução à direita, alinhada à base do título (como em Serviços) */
+  .diffs__intro {
+    grid-column: 9 / -1;
+    grid-row: 2;
+    align-self: end;
+    margin-top: 0;
+  }
+
+  .diffs__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: var(--space-18);
+  }
+
+  .diff {
+    padding: var(--space-8) var(--space-4) 0 0;
+  }
+
+  .diff__pad {
+    top: 0;
+  }
+
+  .diff__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .diff__icon {
+    margin-top: 0;
+  }
+
+  /* Títulos com a mesma altura (2 linhas): os quatro textos começam na mesma linha */
+  .diff__title {
+    min-height: calc(2 * var(--fs-h3) * var(--lh-snug));
+  }
+
+  /* Barramento horizontal sobre as 4 colunas */
+  .diff:not(:last-child)::before {
+    content: '';
+    left: var(--pad-size);
+    top: calc((var(--pad-size) - var(--trace-w)) / 2);
+    width: calc(100% + var(--gap) - var(--pad-size));
+    height: var(--trace-w);
+  }
+
+  /* Ramificação em T a partir da espinha */
+  .diff:first-child::after {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: calc((var(--pad-size) - var(--trace-w)) / 2);
+    width: calc(-1 * var(--axis) - var(--pad-size) / 2);
+    height: var(--trace-w);
+    background: var(--color-trace);
+  }
+
+  /* A cruz da logo marca o encontro da espinha com o barramento */
+  .diffs__list::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    left: calc(var(--axis) + (var(--pad-size) - var(--cross-size)) / 2);
+    top: calc((var(--pad-size) - var(--cross-size)) / 2);
+    width: var(--cross-size);
+    height: var(--cross-size);
+    background:
+      linear-gradient(var(--color-blue), var(--color-blue)) center / 100% 34% no-repeat,
+      linear-gradient(var(--color-blue), var(--color-blue)) center / 34% 100% no-repeat;
+  }
+}

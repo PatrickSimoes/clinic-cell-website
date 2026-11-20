@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300" role="img" aria-label="Ilustração: traseira de celular com as câmeras, ao lado de um alto-falante e um microfone">
+<rect width="480" height="300" fill="#EEF4FB"/>
+<g fill="none" stroke="#C6D7EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M0 56H40L64 80V112"/><path d="M480 60H452L432 80V104"/><path d="M480 240H420"/></g>
+<g fill="#EEF4FB" stroke="#C6D7EC" stroke-width="2"><circle cx="64" cy="118" r="5"/><circle cx="432" cy="110" r="5"/><circle cx="414" cy="240" r="5"/></g>
+<rect x="96" y="30" width="140" height="240" rx="24" fill="#FFFFFF" stroke="#0750A5" stroke-width="3"/>
+<rect x="112" y="46" width="78" height="96" rx="20" fill="#D6E4F7" stroke="#0750A5" stroke-width="2.5"/>
+<circle cx="140" cy="74" r="17" fill="#0B356A" stroke="#0750A5" stroke-width="2.5"/>
+<circle cx="140" cy="74" r="10.5" fill="#1C4F8F"/>
+<circle cx="140" cy="74" r="5.1" fill="#3D7BC6"/>
+<circle cx="134.6" cy="68.6" r="2.7" fill="#FFFFFF" opacity=".85"/>
+<circle cx="140" cy="115" r="17" fill="#0B356A" stroke="#0750A5" stroke-width="2.5"/>
+<circle cx="140" cy="115" r="10.5" fill="#1C4F8F"/>
+<circle cx="140" cy="115" r="5.1" fill="#3D7BC6"/>
+<circle cx="134.6" cy="109.6" r="2.7" fill="#FFFFFF" opacity=".85"/>
+<circle cx="172" cy="98" r="10" fill="#0B356A" stroke="#0750A5" stroke-width="2.5"/>
+<circle cx="172" cy="98" r="6.2" fill="#1C4F8F"/>
+<circle cx="172" cy="98" r="3.0" fill="#3D7BC6"/>
+<circle cx="168.8" cy="94.8" r="1.6" fill="#FFFFFF" opacity=".85"/>
+<circle cx="172" cy="64" r="5" fill="#FFFFFF" stroke="#0750A5" stroke-width="2"/>
+<rect x="270" y="62" width="94" height="40" rx="20" fill="#FFFFFF" stroke="#0750A5" stroke-width="3"/>
+<g fill="#0750A5">
+  <circle cx="290" cy="82" r="3"/><circle cx="303" cy="82" r="3"/><circle cx="316" cy="82" r="3"/>
+  <circle cx="329" cy="82" r="3"/><circle cx="342" cy="82" r="3"/>
+</g>
+<g fill="none" stroke-linecap="round" stroke-width="3">
+  <path d="M378 68c8 8 8 20 0 28" stroke="#0750A5"/>
+  <path d="M390 58c14 14 14 34 0 48" stroke="#7FA8DB"/>
+</g>
+<rect x="302" y="134" width="30" height="50" rx="15" fill="#FFFFFF" stroke="#0750A5" stroke-width="3"/>
+<path d="M309 150h16M309 159h16M309 168h16" stroke="#7FA8DB" stroke-width="2" stroke-linecap="round"/>
+<path d="M294 162v6a23 23 0 0 0 46 0v-6M317 191v16M305 207h24" fill="none" stroke="#0750A5" stroke-width="3" stroke-linecap="round"/>
+</svg>

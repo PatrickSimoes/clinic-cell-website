@@ -1,0 +1,102 @@
+/* ==========================================================================
+   Destaques — faixa logo abaixo do topo: fatos curtos separados por fios
+   ========================================================================== */
+
+.highlights {
+  background: var(--color-paper-2);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.highlights > .container {
+  padding-block: var(--space-6);
+}
+
+.highlights__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.highlight {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  row-gap: var(--space-1);
+}
+
+.highlight__icon {
+  width: var(--icon-diff);
+  height: var(--icon-diff);
+  margin-bottom: var(--space-2);
+  stroke-width: var(--icon-stroke-content);
+  color: var(--color-blue);
+}
+
+.highlight__value {
+  font-size: var(--fs-lead);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  text-wrap: balance;
+  /* "Parcelamento" não cabe na coluna de 320 px com o texto espaçado (1.4.12): quebra em vez de vazar */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.highlight__text {
+  font-size: var(--fs-small);
+  line-height: var(--lh-data);
+  color: var(--color-ink-2);
+  text-wrap: pretty;
+}
+
+/* Abaixo de 1024: 2 × 2, com fio entre as colunas e entre as fileiras */
+@media (max-width: 63.99875em) {
+  .highlight {
+    padding: var(--space-4) var(--space-4) var(--space-4) 0;
+  }
+
+  .highlight:nth-child(even) {
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--color-rule);
+  }
+
+  .highlight:nth-child(n + 3) {
+    border-top: 1px solid var(--color-rule);
+  }
+}
+
+/* A partir de 1024: 4 colunas */
+@media (min-width: 64em) {
+  .highlights > .container {
+    padding-block: var(--space-8);
+  }
+
+  .highlights__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .highlight {
+    padding: var(--space-2) var(--space-6);
+  }
+
+  .highlight:first-child {
+    padding-left: 0;
+  }
+
+  .highlight + .highlight {
+    border-left: 1px solid var(--color-rule);
+  }
+}
+
+/* A partir de 1280 há largura para o ícone ficar à esquerda do valor */
+@media (min-width: 80em) {
+  .highlight {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--space-3);
+  }
+
+  .highlight__icon {
+    grid-row: 1 / span 2;
+    margin-bottom: 0;
+    margin-top: calc((var(--fs-lead) * var(--lh-snug) - var(--icon-diff)) / 2);
+  }
+}

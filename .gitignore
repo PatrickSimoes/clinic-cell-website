@@ -1,0 +1,21 @@
+# dependências
+node_modules/
+
+# build
+dist/
+dist-ssr/
+
+# verificações locais (screenshots, relatórios)
+qa-output/
+
+# ambiente e editores
+.env
+.env.*
+!.env.example
+*.local
+*.log
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/

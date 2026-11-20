@@ -1,0 +1,149 @@
+/* ==========================================================================
+   Localização — "Nº 2884", ficha, kit "como chegar" e mapa do Google
+   ========================================================================== */
+
+.location__info {
+  margin-top: var(--space-8);
+}
+
+.location__number {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--color-blue);
+  font-weight: var(--fw-semibold);
+}
+
+.location__number-kicker {
+  font-size: var(--fs-kicker);
+  line-height: 1;
+  letter-spacing: var(--tracking-index);
+}
+
+.location__number-value {
+  margin-left: -0.03em;
+  font-size: var(--fs-number);
+  line-height: var(--lh-numeral);
+  letter-spacing: var(--tracking-numeral);
+}
+
+.location__street {
+  display: block;
+  margin-top: var(--space-5);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-h3);
+}
+
+.location__district {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-ink-2);
+}
+
+.location__cep {
+  display: block;
+  color: var(--color-ink-2);
+  white-space: nowrap;
+}
+
+.location__ficha {
+  margin-top: var(--space-7);
+}
+
+.location__actions {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.location__more {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-6);
+  margin-top: var(--space-3);
+}
+
+/* A região de anúncio fica sempre renderizada, sem altura: regiões aria-live precisam existir
+   antes da mensagem para os leitores de tela anunciarem a mudança. Só a mensagem de falha
+   ocupa espaço (a confirmação é visualmente oculta). */
+.location__status {
+  font-size: var(--fs-small);
+  color: var(--color-ink-2);
+}
+
+.location__status-texto {
+  display: block;
+  margin-top: var(--space-1);
+}
+
+.location__map {
+  margin: var(--space-12) calc(-1 * var(--margin)) 0;
+}
+
+/* Mapa do Google (iframe; só carrega perto da tela). Largura total no celular. */
+.location__map-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 20rem;
+  border: 0;
+  border-block: 1px solid var(--color-rule);
+  background: var(--color-paper-2);
+}
+
+@media (min-width: 48em) {
+  .location__actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .location__map {
+    margin-inline: 0;
+  }
+
+  .location__map-frame {
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--color-rule);
+  }
+}
+
+@media (min-width: 64em) {
+  .location__title {
+    grid-column: 1 / span 9;
+  }
+
+  .location__info {
+    grid-column: 1 / span 5;
+    margin-top: var(--space-12);
+  }
+
+  .location__map {
+    grid-column: 7 / -1;
+    grid-row: 3;
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-12);
+  }
+
+  .location__map-frame {
+    flex: 1;
+    aspect-ratio: auto;
+    min-height: 30rem;
+  }
+}
+
+/* Coluna estreita demais para os dois botões lado a lado: empilha em largura total, como no celular */
+@media (min-width: 64em) and (max-width: 79.99875em) {
+  .location__actions {
+    display: grid;
+  }
+}
+
+/* Sem JavaScript o mapa não carrega: a caixa nem aparece (o botão "Abrir no Google Maps" continua). */
+@media (scripting: none) {
+  .location__map {
+    display: none;
+  }
+}
