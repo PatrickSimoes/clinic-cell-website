@@ -11,6 +11,8 @@
  * assume), espaçamento de texto (WCAG 1.4.12, inclusive o foco com o header fixo e o botão
  * flutuante), texto ampliado, zoom de 400%, tradução automática do navegador, fontes aplicadas e
  * CLS com a fonte chegando atrasada.
+ * A página em espanhol (/es/) passa pelas larguras de tela, pelo axe, pelos links do WhatsApp
+ * (mensagem em espanhol, botões verdes) e pela troca de idioma nos dois sentidos.
  * Screenshots e relatório ficam em qa-output/ (ignorado pelo git).
  *
  * Navegador: defina CHROME_PATH se ele não for encontrado automaticamente.
@@ -22,6 +24,10 @@ import { preview } from 'vite';
 import { chromium } from 'playwright-core';
 import { AxeBuilder } from '@axe-core/playwright';
 import { site } from '../src/config/site.js';
+import { areasDeServico } from '../src/content/servicos.js';
+import { textos } from '../src/content/textos.js';
+import { textos as textosEs } from '../src/content/textos.es.js';
+import { avaliarNoGoogleUrl } from '../src/lib/contact.js';
 import { findBrowser } from './lib/browser.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -48,6 +54,11 @@ const ESPACAMENTO_1_4_12 =
 const BUNDLE_JS = /\/assets\/[^/]+\.js(\?.*)?$/;
 /** Mapa do Google incorporado na Localização (src/lib/contact.js → mapaIncorporadoUrl). */
 const MAPA_GOOGLE = /^https:\/\/maps\.google\.com\/maps\?/;
+/** Mensagens do WhatsApp de cada idioma (gerais e das áreas): o cliente envia no idioma que lê. */
+const MENSAGENS = {
+  pt: new Set([...Object.values(site.whatsapp.mensagens), ...areasDeServico.map((a) => a.mensagemWhatsApp)]),
+  es: new Set([...Object.values(site.whatsapp.mensagensEs), ...areasDeServico.map((a) => a.es.mensagemWhatsApp)]),
+};
 
 /** Espera dois quadros: dá tempo às reações à rolagem (ex.: o botão flutuante do WhatsApp). */
 const doisQuadros = (page) => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
@@ -433,7 +444,7 @@ async function main() {
       record(wa.length > 0, `${wa.length} links de WhatsApp`);
       for (const l of wa) {
         const u = new URL(l.href);
-        const okLink = u.pathname === `/${site.whatsapp.numero}` && (u.searchParams.get('text') ?? '').length > 10 && l.target === '_blank' && l.rel.includes('noopener');
+        const okLink = u.pathname === `/${site.whatsapp.numero}` && MENSAGENS.pt.has(u.searchParams.get('text') ?? '') && l.target === '_blank' && l.rel.includes('noopener');
         record(okLink, `"${l.text.slice(0, 50)}" → mensagem: "${(u.searchParams.get('text') ?? '').slice(0, 60)}…"`, l);
       }
       // Acesso ao WhatsApp em qualquer ponto da rolagem (celular)
@@ -758,7 +769,13 @@ async function main() {
         '"Copiar endereço" com falha: endereço por escrito e à vista, botão com a mesma largura', { larguraAntes, ...st });
       await context.close();
     }
-    for (const [vp, url] of [[MOBILE, baseUrl], [DESKTOP, baseUrl], [DESKTOP, `${baseUrl}404.html`]]) {
+    for (const [vp, url] of [
+      [MOBILE, baseUrl],
+      [DESKTOP, baseUrl],
+      [DESKTOP, `${baseUrl}404.html`],
+      [MOBILE, `${baseUrl}es/`],
+      [DESKTOP, `${baseUrl}es/`],
+    ]) {
       // Todo botão ou link que abre o WhatsApp é verde: fundo verde nos botões, texto verde nos
       // links (o verde claro sobre o campo azul).
       const { context, page } = await openPage(browser, url, vp);
@@ -774,7 +791,7 @@ async function main() {
         return { total: links.length, fora };
       });
       record(st.total > 0 && st.fora.length === 0,
-        `${vp.name}${url.endsWith('404.html') ? ' (404)' : ''}: todos os ${st.total} botões e links do WhatsApp em verde`, st.fora.slice(0, 4));
+        `${vp.name}${url.endsWith('404.html') ? ' (404)' : url.endsWith('/es/') ? ' (espanhol)' : ''}: todos os ${st.total} botões e links do WhatsApp em verde`, st.fora.slice(0, 4));
       await context.close();
     }
     for (const vp of [MOBILE, DESKTOP]) {
@@ -859,7 +876,97 @@ async function main() {
       }
     }
 
-    // 10. Página 404 --------------------------------------------------------------
+    // 10. Página em espanhol, troca de idioma e avaliações ----------------------
+    console.log('\nVersão em espanhol (/es/) e troca de idioma');
+    const urlEs = `${baseUrl}es/`;
+    for (const vp of [VIEWPORTS[0], MOBILE, VIEWPORTS[4], VIEWPORTS[5], DESKTOP]) {
+      const { context, page, errors, external, failed } = await openPage(browser, urlEs, vp);
+      const st = await page.evaluate((width) => ({
+        lang: document.documentElement.lang,
+        h1: document.querySelector('h1')?.textContent.trim(),
+        scrollWidth: document.documentElement.scrollWidth,
+        largura: width,
+      }), vp.width);
+      record(st.lang === 'es' && st.h1 === textosEs.hero.titulo && st.scrollWidth <= vp.width,
+        `${vp.name} (espanhol): página em espanhol, sem rolagem horizontal`, st);
+      record(errors.length === 0, `${vp.name} (espanhol): sem erros de console/hidratação`, errors.slice(0, 3));
+      record(failed.length === 0 && external.length === 0, `${vp.name} (espanhol): sem requisições com falha nem a terceiros`,
+        [...failed, ...external].slice(0, 3));
+      await page.screenshot({ path: path.join(out, 'screens', `es-${vp.name}.png`), fullPage: true });
+      await context.close();
+    }
+    for (const vp of [MOBILE, DESKTOP]) {
+      const { context, page } = await openPage(browser, urlEs, vp);
+      const { violations } = await axeViolations(page);
+      record(violations.length === 0, `${vp.name} (espanhol): 0 violações axe (topo da página)`, violations);
+      await context.close();
+    }
+    {
+      // Menu aberto e botão flutuante, em espanhol.
+      const { context, page } = await openPage(browser, urlEs, { ...MOBILE, reducedMotion: 'reduce' });
+      await mostrarBotaoFlutuante(page);
+      let { violations } = await axeViolations(page);
+      record(violations.length === 0, `${MOBILE.name} (espanhol): 0 violações axe com o botão flutuante visível`, violations);
+      await page.locator('header button[aria-controls]').click();
+      await page.waitForTimeout(300);
+      ({ violations } = await axeViolations(page));
+      record(violations.length === 0, `${MOBILE.name} (espanhol): 0 violações axe com o menu aberto`, violations);
+      await context.close();
+    }
+    {
+      // Todo link do WhatsApp da página em espanhol leva a mensagem em espanhol.
+      const { context, page } = await openPage(browser, urlEs, MOBILE);
+      const naPagina = await page.$$eval('a[href^="https://wa.me/"]', (els) => els.map((a) => new URL(a.href).searchParams.get('text') ?? ''));
+      const fora = naPagina.filter((t) => !MENSAGENS.es.has(t));
+      record(naPagina.length > 0 && fora.length === 0, `espanhol: os ${naPagina.length} links do WhatsApp com mensagem em espanhol`,
+        fora.slice(0, 3).map((t) => t.slice(0, 60)));
+      await context.close();
+    }
+    for (const vp of [VIEWPORTS[0], DESKTOP]) {
+      // "ES" no header leva à página em espanhol, e "PT" de lá volta à em português.
+      const { context, page } = await openPage(browser, baseUrl, vp);
+      const paraEs = page.locator('header a[hreflang="es"]');
+      const visivelEs = await paraEs.isVisible();
+      await Promise.all([page.waitForURL(/\/es\/$/), paraEs.click()]);
+      await page.waitForFunction(() => document.documentElement.classList.contains('is-hydrated'));
+      const naEs = await page.evaluate(() => ({ lang: document.documentElement.lang, h1: document.querySelector('h1')?.textContent.trim() }));
+      const paraPt = page.locator('header a[hreflang="pt-BR"]');
+      const visivelPt = await paraPt.isVisible();
+      await Promise.all([page.waitForURL((u) => !u.pathname.endsWith('/es/')), paraPt.click()]);
+      const naPt = await page.evaluate(() => ({ lang: document.documentElement.lang, h1: document.querySelector('h1')?.textContent.trim() }));
+      record(visivelEs && visivelPt && naEs.lang === 'es' && naEs.h1 === textosEs.hero.titulo && naPt.lang === 'pt-BR' && naPt.h1 === textos.hero.titulo,
+        `${vp.name}: "ES" no header abre a página em espanhol e "PT" volta à em português`, { visivelEs, visivelPt, naEs, naPt });
+      await context.close();
+    }
+    for (const url of [baseUrl, urlEs]) {
+      // Header do computador numa linha: o botão do WhatsApp não quebra, nas larguras mais apertadas.
+      for (const largura of [1024, 1100, 1280]) {
+        const { context, page } = await openPage(browser, url, { width: largura, height: 800 });
+        // O botão pequeno tem 44 px com uma linha de texto; com duas, passa de 55 px.
+        const st = await page.evaluate(() => ({
+          alturaDoBotao: Math.round(document.querySelector('.site-header__cta').getBoundingClientRect().height),
+          scrollWidth: document.documentElement.scrollWidth,
+        }));
+        record(st.alturaDoBotao <= 48 && st.scrollWidth <= largura,
+          `${largura} px${url === urlEs ? ' (espanhol)' : ''}: header numa linha, com o botão do WhatsApp sem quebrar`, st);
+        await context.close();
+      }
+    }
+    {
+      // Avaliações: convite com o link de avaliação da loja no Google (nova aba, não é WhatsApp).
+      const { context, page } = await openPage(browser, baseUrl, MOBILE);
+      const st = await page.evaluate(() => {
+        const secao = document.querySelector('#avaliacoes');
+        const links = secao ? [...secao.querySelectorAll('a')].map((a) => ({ href: a.href, target: a.target, rel: a.rel })) : [];
+        return { existe: Boolean(secao), links, noMenu: Boolean(document.querySelector('#menu a[href="#avaliacoes"]')) };
+      });
+      const link = st.links.find((l) => l.href === avaliarNoGoogleUrl());
+      record(st.existe && st.noMenu && link?.target === '_blank' && link.rel.includes('noopener'),
+        'Avaliações: seção no menu, com o link "Avaliar no Google" da loja (nova aba)', st);
+      await context.close();
+    }
+
+    // 11. Página 404 --------------------------------------------------------------
     console.log('\nPágina 404');
     {
       const { context, page, errors } = await openPage(browser, `${baseUrl}404.html`, VIEWPORTS[7]);

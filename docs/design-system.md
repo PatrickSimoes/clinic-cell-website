@@ -365,6 +365,7 @@ As ilustrações das áreas de serviço são imagens à parte (ver "Ilustraçõe
 - **Abaixo de 1024:**
   - 72 px;
   - logo azul com 44 px de altura dentro de um link para `#topo` (alt "ClinicCell, início"). `#topo` é uma âncora vazia no início da página: com ela a rolagem vai a 0 em qualquer largura (uma âncora no hero ou no `<main>` pararia abaixo do header). O "Voltar ao topo" do rodapé usa a mesma âncora;
+  - link de idioma ("ES" na página em português, "PT" na em espanhol) colado ao "Menu": `Globe` azul de 20 px + sigla 17/500, alvo de 44 px. O link fala o idioma de destino (`lang` e `hreflang`) e completa o nome para leitores de tela ("ES – Ver el sitio en español");
   - botão "Menu" com 48 px de altura, `aria-expanded` e `aria-controls="menu"`;
   - até o React assumir a página (rede lenta, JS bloqueado ou com erro), o botão fica escondido e aparece o link "Menu" para `#rodape-navegacao` (focável, `tabindex="-1"`), com o mesmo visual e a mesma caixa. A troca é controlada pela classe `html.is-hydrated`, que o `SiteLayout` adiciona depois da hidratação. Se o foco do teclado estiver no link nessa hora, ele passa para o botão;
   - o "Copiar endereço" (`.requires-js`) também espera o React, mas oculto com `visibility: hidden`: o lugar fica reservado e nada se desloca quando ele aparece. Sem JavaScript nenhum (`@media (scripting: none)`), nem o lugar fica.
@@ -372,14 +373,15 @@ As ilustrações das áreas de serviço são imagens à parte (ver "Ilustraçõe
 - **A partir de 1024:**
   - 80 px;
   - logo com 52 px, alinhada ao eixo das trilhas;
-  - navegação com as 6 seções (Serviços, Sobre, Diferenciais, Localização, Dúvidas, Contato): nomes de 15/500, alvo de 44 px, espaço entre eles de `clamp(1.125rem, 2.2vw, 2.25rem)`;
-  - botão small verde "Orçamento pelo WhatsApp".
+  - navegação com as seções (Serviços, Sobre, Diferenciais, Localização, Dúvidas e, a partir de 1280, Contato): nomes de 15/500, alvo de 44 px, espaço entre eles de `clamp(1.125rem, 2.2vw, 2.25rem)`. Avaliações fica só no menu e no rodapé (`foraDoHeader` em `src/content/secoes.js`); entre 1024 e 1279 px, Contato também sai (`headerLargo`), porque o botão verde ao lado já leva ao contato e não há espaço para tudo numa linha;
+  - link de idioma ("ES"/"PT", 15/500), antes do botão;
+  - botão small verde "Orçamento pelo WhatsApp", sempre numa linha (o QA confere em 1024, 1100 e 1280 px, nos dois idiomas).
 
 ### Menu (celular)
 
 - Diálogo de tela cheia: `role="dialog"`, `aria-modal="true"`, `aria-label="Menu"`, fundo branco.
 - Topo: logo + botão "Fechar" (`X`).
-- Corpo: "SUMÁRIO" com terminal sólido e a lista das 6 seções em linhas de 64 px, com nomes de 28/500 e uma trilha ligando os terminais.
+- Corpo: "SUMÁRIO" com terminal sólido e a lista das 7 seções (com Avaliações) em linhas de 64 px, com nomes de 28/500 e uma trilha ligando os terminais.
 - Pé, na zona do polegar: verde stacked "Solicitar orçamento / pelo WhatsApp", secundário "Traçar rota" e o endereço em duas linhas (rua / bairro · cidade).
 - Comportamento:
   - ao abrir, o foco vai para "Fechar";
@@ -516,6 +518,18 @@ Uma linha por **área** (5 áreas, 25 serviços), não por serviço. `<ol class=
 - Sem serviços publicados, a pergunta sobre os serviços sai.
 - Só fatos confirmados. Prazo e preço entram quando o proprietário confirmar.
 
+### Avaliações (`#avaliacoes`)
+
+- Seção com rótulo "Avaliações", entre Diferenciais e Localização. Aparece quando há avaliação publicada ou o link para avaliar no Google (Place ID).
+- **Sem avaliações (hoje):** H2 "Já é cliente da ClinicCell?", introdução ("Conte no Google como foi o seu atendimento…") e o botão secundário `Star` + "Avaliar no Google" (nova aba). Não é verde: não abre o WhatsApp.
+- **Com avaliações:** H2 "O que dizem os clientes da ClinicCell", introdução ("Avaliações reais, publicadas com a permissão de cada cliente.") e as avaliações em linhas com fio, sem cards: uma coluna no celular, duas a partir de 1024 (gap 48), as mais recentes primeiro. Cada uma tem fio em cima e embaixo, sobrepostos (margem de −1 px), e 24 px de respiro.
+  - estrelas (só nas do Google): 5 `Star` de 16 px em #0750A5, preenchidas até a nota; o leitor de tela lê "Nota 5 de 5";
+  - texto entre aspas, `--fs-lead`, entrelinha 1.25, até 30,2em;
+  - nome em 600 #172B45, origem e mês em #4A5A70, 15 px ("Avaliação no Google · março de 2026").
+- O botão "Avaliar no Google" fecha a seção também com avaliações.
+- Na página em espanhol, o texto da avaliação fica em português (`lang="pt-BR"`), como o cliente escreveu.
+- Nunca entra avaliação inventada, editada ou sem permissão, nem nota nos dados estruturados.
+
 ### Endereço com numeral (Localização)
 
 - O "Nº" (kicker de 14 a 18 px) e o "2884" (`--fs-number`) ficam em #0750A5, peso 600, com `aria-hidden`.
@@ -554,7 +568,7 @@ Uma linha por **área** (5 áreas, 25 serviços), não por serviço. `<ol class=
 
 - Fio superior, padding 56/28.
 - Logo azul com 56 px de altura e a frase descritiva.
-- Blocos com títulos mono em `<h2>`: ENDEREÇO (com "Abrir no Google Maps ↗" e o CEP em linha própria), WHATSAPP e NAVEGAÇÃO (as 6 seções em 2 colunas, linhas de 44 px). A navegação é `<nav aria-label="Rodapé" id="rodape-navegacao">`.
+- Blocos com títulos mono em `<h2>`: ENDEREÇO (com "Abrir no Google Maps ↗" e o CEP em linha própria), WHATSAPP e NAVEGAÇÃO (as 7 seções, com Avaliações, em 2 colunas, linhas de 44 px). A navegação é `<nav aria-label="Rodapé" id="rodape-navegacao">`.
 - Barra final: "© {ano} ClinicCell…" e "Voltar ao topo ↑".
 
 ### Foto real opcional (Sobre)
@@ -792,7 +806,7 @@ Testes automáticos não substituem uma auditoria manual com leitores de tela re
 - Listas estilizadas levam `role="list"`, porque o WebKit remove a semântica quando há `list-style: none`.
 - `scroll-padding-top` = header + 16 px abaixo de 1024 e header + 24 px a partir de 1024 (16 px quando o header não é fixo, em telas muito baixas). `scroll-padding-bottom` = altura da barra fixa do WhatsApp (`--fab-h`, ≈ 82 px) + área segura + 1rem abaixo de 1024 (≈ 98 px sem área segura; ou a medida, quando a barra muda de altura) e 1rem a partir de 1024, para o anel de foco não ser cortado na borda da janela (2.4.11).
 - Contraste forçado (Windows): as logos mantêm o fundo da marca (`forced-color-adjust: none`), senão a branca some nos temas claros e a azul nos escuros.
-- `lang="pt-BR"`.
+- `lang="pt-BR"` na página em português e `lang="es"` na em espanhol; trechos no outro idioma (o link de troca de idioma, as avaliações na página em espanhol) levam o próprio `lang`.
 - `color-scheme: light`.
 
 ---
@@ -805,7 +819,9 @@ Testes automáticos não substituem uma auditoria manual com leitores de tela re
 - Mono em texto corrido, títulos, botões ou telefone.
 - Logo redesenhada, recolorida, distorcida, cortada ou com mais de 470 px de largura.
 - Fotos de banco de imagens ou placeholder de foto em produção (as ilustrações dos serviços são desenhos feitos para o site, não placeholders).
-- Nota no Google, número de aparelhos atendidos, "laboratório próprio", avaliações, prazos ou preços antes de confirmados pelo proprietário (`docs/pendencias.md`).
+- Nota no Google, número de aparelhos atendidos, "laboratório próprio", prazos ou preços antes de confirmados pelo proprietário (`docs/pendencias.md`).
+- Avaliação inventada, editada ou publicada sem a permissão do cliente.
+- Texto só num idioma: o que entra em português entra também em espanhol.
 - Mapa com ruas, rota ou rosa dos ventos inventadas.
 - Iframe do Google Maps na carga inicial.
 - Barra fixa do WhatsApp sobre o CTA final ou sobre o rodapé.

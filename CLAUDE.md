@@ -31,6 +31,10 @@ Antes de mexer, leia o [CONTINUAR.md](CONTINUAR.md) (estado atual e o que falta)
 - **Nada inventado.** Só entra o que a loja confirmou. A lista do que está confirmado e do que ainda não
   pode aparecer está no CONTINUAR.md (seção 3) e no cabeçalho de `src/content/textos.js`.
 - Todo botão ou link que abre o WhatsApp é verde (`.button--whatsapp`, `.link--whatsapp`, `.service__link`).
+- Dois idiomas: português (`/`) e espanhol (`/es/`). Todo texto novo entra nos dois (`textos.js` e
+  `textos.es.js`; `es` em cada área de serviço; `whatsapp.mensagensEs`). Na página em espanhol, a mensagem do
+  WhatsApp vai em espanhol. O build falha se faltar uma tradução.
+- Avaliações de clientes: só as reais, com permissão, em `src/content/avaliacoes.js`.
 - Tecnologia: React 19 + JavaScript + Vite, decisão do Patrick. Não migrar para TypeScript, Next ou Astro.
 - Depois de mudar código, rode `npm run check` e `npm run qa`. O esperado é "✓ Tudo certo, 2 aviso(s)" e
   "✓ Tudo certo". Atualize o README e o `docs/` quando a mudança afetar o que está descrito lá.

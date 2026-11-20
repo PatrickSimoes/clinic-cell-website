@@ -12,15 +12,21 @@ export { renderHead } from './lib/head.js';
 export { problemasNosDados } from './lib/validar-site.js';
 export { site } from './config/site.js';
 export { areasDeServico } from './content/servicos.js';
+export { avaliacoes } from './content/avaliacoes.js';
+export { textos } from './content/textos.js';
+export { textos as textosEs } from './content/textos.es.js';
 
 /** Áreas de serviço com imagem em src/assets/servicos (src/lib/imagens-de-servico.js). */
 export const idsComImagem = Object.keys(imagensDeServico);
 
-/** @param {'home' | '404'} page */
-export function render(page) {
+/**
+ * @param {'home' | '404'} page
+ * @param {'pt' | 'es'} [idioma]
+ */
+export function render(page, idioma = 'pt') {
   return renderToString(
     <StrictMode>
-      <App page={page} />
+      <App page={page} idioma={idioma} />
     </StrictMode>,
   );
 }

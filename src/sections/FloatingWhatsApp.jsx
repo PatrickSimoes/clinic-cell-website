@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { MessageCircle } from 'lucide-react';
-import { site } from '../config/site.js';
-import { textos } from '../content/textos.js';
+import { useIdioma } from '../lib/idioma.js';
 import { Icon } from '../components/Icon.jsx';
 import { StackedLabel } from '../components/StackedLabel.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
@@ -23,6 +22,7 @@ function naTela(element) {
  * @param {boolean} props.inert
  */
 export function FloatingWhatsApp({ menuOpen, inert }) {
+  const { textos, mensagens } = useIdioma();
   const fabRef = useRef(/** @type {HTMLElement | null} */ (null));
   const menuOpenRef = useRef(menuOpen);
   // Botão do hero, #contato e rodapé: buscados uma vez (no efeito abaixo). O update() roda a
@@ -112,7 +112,7 @@ export function FloatingWhatsApp({ menuOpen, inert }) {
     <aside className="whatsapp-fab" ref={fabRef} inert={inert} aria-label={textos.flutuante.aria}>
       <WhatsAppLink
         className="button button--whatsapp button--block whatsapp-fab__link"
-        mensagem={site.whatsapp.mensagens.orcamento}
+        mensagem={mensagens.orcamento}
       >
         <Icon icon={MessageCircle} />
         <StackedLabel sub={textos.global.peloWhatsApp}>{textos.flutuante.botao}</StackedLabel>

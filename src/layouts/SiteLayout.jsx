@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { textos } from '../content/textos.js';
+import { useIdioma } from '../lib/idioma.js';
 import { FloatingWhatsApp } from '../sections/FloatingWhatsApp.jsx';
 import { Footer } from '../sections/Footer.jsx';
 import { Header } from '../sections/Header.jsx';
@@ -71,6 +71,7 @@ function voltarAoLugar(lugar) {
  * @param {import('react').ReactNode} props.children
  */
 export function SiteLayout({ page, children }) {
+  const { textos } = useIdioma();
   const [menuOpen, setMenuOpen] = useState(false);
   const opener = useRef(/** @type {HTMLElement | null} */ (null));
   const lugar = useRef(/** @type {ReturnType<typeof lugarDeLeitura>} */ (null));

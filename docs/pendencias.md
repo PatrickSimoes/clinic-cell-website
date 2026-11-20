@@ -114,6 +114,8 @@ O Google só mostra o ícone e o nome "ClinicCell" nos resultados para sites na 
 
 `https://search.google.com/local/writereview?placeid=ChIJXWmYfJrx3JQRzvMjdIG0urE`
 
+Desde 20/11/2026, o mesmo link está no botão "Avaliar no Google" da seção Avaliações do site.
+
 Não ofereça desconto ou brinde em troca e não peça só a clientes satisfeitos: as regras do Google proíbem.
 
 ## Para a página (só entra se confirmado)
@@ -142,7 +144,9 @@ Não ofereça desconto ou brinde em troca e não peça só a clientes satisfeito
 - como o nome deve aparecer (nome completo, só o primeiro nome ou iniciais);
 - se o cliente quer aparecer com foto, enviada por ele mesmo.
 
-**Situação:** o site não mostra nenhuma avaliação de cliente e ainda não tem seção para isso. Ela entra quando houver textos confirmados.
+**Situação:** a seção "Avaliações" existe desde 20/11/2026, entre Diferenciais e Localização. Sem avaliações confirmadas, ela mostra só o convite "Já é cliente da ClinicCell?" com o botão "Avaliar no Google" (decisão do Patrick). Nenhuma avaliação de cliente aparece no site ainda.
+
+**Onde alterar:** `src/content/avaliacoes.js` (modelo no próprio arquivo e no [README](../README.md#avaliações-de-clientes)). Só entra avaliação com `permissao: true`. O texto vai como o cliente escreveu, em português, também na página em espanhol.
 
 ### 11. Prazo e preço nas Dúvidas
 
@@ -151,6 +155,16 @@ Não ofereça desconto ou brinde em troca e não peça só a clientes satisfeito
 **Situação:** o site não promete prazo nem preço, nem "atendimento rápido" (que é prazo). Também não usa "orçamento grátis" nem "peças originais" sem confirmação. Hoje o orçamento é sempre pelo WhatsApp.
 
 **Onde alterar:** `src/content/textos.js` → `duvidas` (as perguntas e o formato das respostas estão no [README](../README.md#destaques-e-dúvidas-frequentes)).
+
+### 11a. Atendimento em espanhol
+
+Desde 20/11/2026 o site tem uma versão em espanhol (`/es/`), e nela as mensagens prontas do WhatsApp vão em espanhol (pedido do Patrick).
+
+**Pergunta:** a loja consegue atender quem escreve em espanhol?
+
+**Situação:** o site não afirma que a loja atende em espanhol, e os dados estruturados continuam dizendo atendimento em português (`availableLanguage`). Se a loja confirmar, dá para acrescentar uma frase na página em espanhol (por exemplo, nas Dúvidas) e o espanhol em `availableLanguage` (`src/lib/structured-data.js`).
+
+**Revisão da tradução:** os textos em espanhol foram escritos em espanhol neutro da América Latina, com palavras comuns na Venezuela. Antes de divulgar a página `/es/`, vale pedir a alguém que fale espanhol (de preferência venezuelano) para ler. Onde alterar: `src/content/textos.es.js`, `src/content/seo.es.js`, `es` de cada área em `src/content/servicos.js` e `whatsapp.mensagensEs` em `src/config/site.js`.
 
 ## Opcional
 

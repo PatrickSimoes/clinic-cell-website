@@ -1,10 +1,13 @@
 /**
  * Textos institucionais do site (PT-BR), por seção.
+ * A versão em espanhol fica em src/content/textos.es.js, com a mesma estrutura: ao mudar ou
+ * acrescentar um texto aqui, faça o mesmo lá (o build falha se as estruturas forem diferentes).
  *
  * Regras de conteúdo (valem para qualquer edição):
  * - Não afirmar nem insinuar o que não foi confirmado pelo proprietário: prazos, preços,
- *   "peças originais", "orçamento grátis", avaliações, número de clientes, certificações,
- *   "a melhor", "líder", "aberto agora". Horários: só os de src/config/site.js.
+ *   "peças originais", "orçamento grátis", nota no Google, número de clientes, certificações,
+ *   "a melhor", "líder", "aberto agora". Horários: só os de src/config/site.js. Avaliações de
+ *   clientes: só as reais, de src/content/avaliacoes.js.
  * - Confirmado pela própria loja (descrição do Perfil da Empresa no Google, recebida em
  *   20/11/2026): garantia de 90 dias; conserto de iPhone, Samsung, Motorola e outras marcas;
  *   loja física; acessórios; parcelamento no cartão.
@@ -24,6 +27,26 @@ export const textos = {
     menu: 'Menu',
     fechar: 'Fechar',
     peloWhatsApp: 'pelo WhatsApp',
+  },
+
+  /**
+   * Como este idioma se apresenta no link de troca de idioma da outra versão (header).
+   * `ver` é lido só por leitores de tela, depois da sigla.
+   */
+  idioma: {
+    sigla: 'PT',
+    ver: 'Ver o site em português',
+  },
+
+  /** Nomes das seções (navegação do header, menu, rodapé e rótulos). A ordem fica em secoes.js. */
+  secoes: {
+    servicos: 'Serviços',
+    sobre: 'Sobre',
+    diferenciais: 'Diferenciais',
+    avaliacoes: 'Avaliações',
+    localizacao: 'Localização',
+    duvidas: 'Dúvidas',
+    contato: 'Contato',
   },
 
   logoAlt: {
@@ -90,6 +113,8 @@ export const textos = {
       'Escolha a área do problema para pedir orçamento pelo WhatsApp. A mensagem já vai pronta; é só completar com o modelo do aparelho e o que aconteceu.',
     tabela: { area: 'Área', servicos: 'Serviços', acao: 'Orçamento' },
     linkItem: 'Pedir orçamento',
+    /** Complemento do "Pedir orçamento" de cada área, lido só por leitores de tela. */
+    linkItemOculto: (area) => ` de ${area.toLowerCase()} pelo WhatsApp`,
     mais: { pergunta: 'Seu caso não está na lista?', link: 'Descreva o defeito pelo WhatsApp' },
     vazio: {
       titulo: 'Conte o que aconteceu com o seu celular',
@@ -147,8 +172,33 @@ export const textos = {
     ],
   },
 
+  /**
+   * Avaliações de clientes (src/content/avaliacoes.js). Sem nenhuma publicada, a seção mostra
+   * só o convite para avaliar a loja no Google.
+   */
+  avaliacoes: {
+    titulo: `O que dizem os clientes da ${nome}`,
+    introducao: 'Avaliações reais, publicadas com a permissão de cada cliente.',
+    semAvaliacoes: {
+      titulo: `Já é cliente da ${nome}?`,
+      introducao: 'Conte no Google como foi o seu atendimento. Sua avaliação ajuda outras pessoas a conhecer a loja.',
+    },
+    avaliar: 'Avaliar no Google',
+    origem: { google: 'Avaliação no Google', whatsapp: 'Mensagem no WhatsApp' },
+    /** Estrelas, lido só por leitores de tela. */
+    nota: (n) => `Nota ${n} de 5`,
+    meses: [
+      'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+      'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',
+    ],
+    /** "março de 2026" */
+    data: (mes, ano) => `${mes} de ${ano}`,
+  },
+
   localizacao: {
     titulo: `Assistência técnica de celular no bairro ${bairro}`,
+    /** Antes do número da loja, em destaque ("Nº 2884"). */
+    numero: 'Nº',
     ficha: { whatsapp: 'WhatsApp', horario: 'Horário' },
     horarioNaoInformado: 'Consulte pelo WhatsApp antes de vir.',
     confirmarHorario: 'Confirmar horário',

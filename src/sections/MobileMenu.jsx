@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { MessageCircle, Navigation, X } from 'lucide-react';
 import { site } from '../config/site.js';
-import { secoes } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
 import { directionsUrl, formatAddress } from '../lib/contact.js';
+import { useIdioma } from '../lib/idioma.js';
 import { ExternalLink } from '../components/ExternalLink.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { Logo } from '../components/Logo.jsx';
@@ -23,6 +22,7 @@ import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
  * @param {(id: string) => string} props.hrefFor
  */
 export function MobileMenu({ open, onClose, hrefFor }) {
+  const { textos, secoes, mensagens } = useIdioma();
   const dialogRef = useRef(/** @type {HTMLDivElement | null} */ (null));
   const closeRef = useRef(/** @type {HTMLButtonElement | null} */ (null));
   const endereco = formatAddress();
@@ -84,14 +84,14 @@ export function MobileMenu({ open, onClose, hrefFor }) {
       </div>
 
       <div className="container menu__foot">
-        <WhatsAppLink className="button button--whatsapp button--block" mensagem={site.whatsapp.mensagens.orcamento}>
+        <WhatsAppLink className="button button--whatsapp button--block" mensagem={mensagens.orcamento}>
           <Icon icon={MessageCircle} />
           <StackedLabel sub={textos.global.peloWhatsApp}>{textos.menu.orcamento}</StackedLabel>
         </WhatsAppLink>
         <ExternalLink
           className="button button--secondary button--block"
           href={directionsUrl()}
-          srText={` no Google Maps (${textos.global.novaAba})`}
+          srText={`${textos.localizacao.rotaOculto} (${textos.global.novaAba})`}
         >
           <Icon icon={Navigation} />
           {textos.menu.rota}

@@ -1,16 +1,11 @@
 import { ArrowUpRight, MessageCircle, MessageCircleQuestionMark } from 'lucide-react';
-import { site } from '../config/site.js';
-import { nomeDaSecao } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
+import { useIdioma } from '../lib/idioma.js';
 import { imagensDeServico } from '../lib/imagens-de-servico.js';
-import { areasPublicadas } from '../lib/services.js';
 import { Icon } from '../components/Icon.jsx';
 import { Pad } from '../components/Pad.jsx';
 import { SectionLabel } from '../components/SectionLabel.jsx';
 import { StackedLabel } from '../components/StackedLabel.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
-
-const t = textos.servicos;
 
 /**
  * Serviços: tabela de linhas (não cards), uma linha por área com a lista dos serviços dela.
@@ -18,12 +13,13 @@ const t = textos.servicos;
  * descrever o defeito.
  */
 export function Services() {
-  const lista = areasPublicadas;
+  const { textos, areas: lista, mensagens } = useIdioma();
+  const t = textos.servicos;
 
   return (
     <section className="section services has-spine" id="servicos" aria-labelledby="servicos-title" tabIndex={-1}>
       <div className="container grid">
-        <SectionLabel>{nomeDaSecao('servicos')}</SectionLabel>
+        <SectionLabel>{textos.secoes.servicos}</SectionLabel>
         <h2 className="section-title" id="servicos-title">
           {t.titulo}
         </h2>
@@ -48,7 +44,7 @@ export function Services() {
               <Icon icon={MessageCircleQuestionMark} className="services__more-icon" />
               <p className="services__more-text">
                 <span className="services__more-question">{t.mais.pergunta}</span>{' '}
-                <WhatsAppLink className="link link--whatsapp" mensagem={site.whatsapp.mensagens.defeito}>
+                <WhatsAppLink className="link link--whatsapp" mensagem={mensagens.defeito}>
                   {t.mais.link}
                 </WhatsAppLink>
               </p>
@@ -60,8 +56,10 @@ export function Services() {
   );
 }
 
-/** @param {{ area: import('../content/servicos.js').AreaDeServico }} props */
+/** @param {{ area: { id: string, nome: string, servicos: string[], mensagemWhatsApp: string } }} props */
 function ServiceRow({ area }) {
+  const { textos } = useIdioma();
+  const t = textos.servicos;
   return (
     <li className="service" id={`servico-${area.id}`}>
       {/* Imagem decorativa: o título ao lado já diz o que é. */}
@@ -85,7 +83,7 @@ function ServiceRow({ area }) {
       <WhatsAppLink
         className="service__link"
         mensagem={area.mensagemWhatsApp}
-        srText={` de ${area.nome.toLowerCase()} pelo WhatsApp (${textos.global.novaAba})`}
+        srText={`${t.linkItemOculto(area.nome)} (${textos.global.novaAba})`}
         after={<Icon icon={ArrowUpRight} />}
       >
         {t.linkItem}
@@ -96,6 +94,8 @@ function ServiceRow({ area }) {
 
 /** Estado sem serviços publicados: texto perene, voltado à ação (nada de "em breve"). */
 function ServicesEmpty() {
+  const { textos, mensagens } = useIdioma();
+  const t = textos.servicos;
   return (
     <div className="services-empty">
       <div className="services-empty__head">
@@ -104,7 +104,7 @@ function ServicesEmpty() {
       </div>
       <p className="services-empty__text">{t.vazio.texto}</p>
       <div className="services-empty__action">
-        <WhatsAppLink className="button button--whatsapp" mensagem={site.whatsapp.mensagens.defeito}>
+        <WhatsAppLink className="button button--whatsapp" mensagem={mensagens.defeito}>
           <Icon icon={MessageCircle} />
           <StackedLabel sub={textos.global.peloWhatsApp}>{t.vazio.botao}</StackedLabel>
         </WhatsAppLink>

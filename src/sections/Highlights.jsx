@@ -1,14 +1,13 @@
 import { CreditCard, ShieldCheck, Smartphone, Wrench } from 'lucide-react';
-import { textos } from '../content/textos.js';
-import { areasPublicadas } from '../lib/services.js';
+import { useIdioma } from '../lib/idioma.js';
+import { totalDeServicos as totalServicos } from '../lib/services.js';
 import { Icon } from '../components/Icon.jsx';
 
 const ICONES = { CreditCard, ShieldCheck, Smartphone, Wrench };
-const t = textos.destaques;
 
 /** Faixa de destaques logo abaixo do topo: fatos curtos, um por coluna. */
 export function Highlights() {
-  const totalServicos = areasPublicadas.reduce((total, area) => total + area.servicos.length, 0);
+  const t = useIdioma().textos.destaques;
   // Sem serviços publicados, o item com a contagem sai (nada de "0 serviços").
   const itens = t.itens.filter((item) => typeof item.valor !== 'function' || totalServicos > 0);
 

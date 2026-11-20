@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Avaliações — textos reais de clientes em linhas com fio (sem cards), duas colunas no
+   computador; o convite para avaliar no Google fecha a seção
+   ========================================================================== */
+
+/* Cada avaliação tem fio em cima e embaixo; a margem de -1 px sobrepõe o fio de baixo de uma ao
+   de cima da seguinte. Assim, nas duas colunas, cada fileira fecha certinho sem fio sobrando. */
+.reviews__list {
+  display: grid;
+  margin-top: calc(var(--space-8) + 1px);
+}
+
+.review {
+  margin-top: -1px;
+  padding-block: var(--space-6);
+  border-block: 1px solid var(--color-rule);
+}
+
+.review__stars {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  color: var(--color-blue);
+}
+
+.review__star {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.review__star--on {
+  fill: currentColor;
+}
+
+.review__quote {
+  max-width: var(--measure-text);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-snug);
+  text-wrap: pretty;
+}
+
+.review__quote p::before {
+  content: '“';
+}
+
+.review__quote p::after {
+  content: '”';
+}
+
+.review__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-4);
+  font-size: var(--fs-small);
+  color: var(--color-ink-2);
+}
+
+.review__name {
+  font-weight: var(--fw-semibold);
+  color: var(--color-ink);
+}
+
+.reviews__action {
+  margin-top: var(--space-8);
+}
+
+@media (min-width: 64em) {
+  .reviews__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-12);
+    margin-top: calc(var(--space-10) + 1px);
+  }
+
+  .reviews__action {
+    margin-top: var(--space-10);
+  }
+}

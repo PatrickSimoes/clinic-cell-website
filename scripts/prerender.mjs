@@ -1,8 +1,9 @@
 /**
  * Pré-renderização: transforma o build do Vite em páginas HTML completas.
  *
- * - dist/index.html  página inicial com todo o conteúdo no HTML (SEO e carregamento rápido)
- * - dist/404.html    página de erro (o GitHub Pages a usa automaticamente)
+ * - dist/index.html     página inicial com todo o conteúdo no HTML (SEO e carregamento rápido)
+ * - dist/es/index.html  a mesma página em espanhol (src/content/idiomas.js)
+ * - dist/404.html       página de erro (o GitHub Pages a usa automaticamente)
  * - dist/sitemap.xml, dist/robots.txt, dist/site.webmanifest
  *
  * Também:
@@ -14,13 +15,17 @@
  * Executado por `npm run build`. Lê SITE_URL e BASE_PATH (ver scripts/deploy-env.mjs).
  */
 import { createHash } from 'node:crypto';
-import { readFile, writeFile, readdir, rm } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolveDeployEnv } from './deploy-env.mjs';
 import { site } from '../src/config/site.js';
+import { avaliacoes } from '../src/content/avaliacoes.js';
+import { idiomas, listaDeIdiomas } from '../src/content/idiomas.js';
 import { seo } from '../src/content/seo.js';
 import { areasDeServico } from '../src/content/servicos.js';
+import { textos } from '../src/content/textos.js';
+import { textos as textosEs } from '../src/content/textos.es.js';
 import { validarSite } from '../src/lib/validar-site.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -41,11 +46,13 @@ const { render, renderHead, idsComImagem } = await import(
 );
 
 // 0. Dados editados à mão ---------------------------------------------------------
-validarSite(site, areasDeServico, { imagens: idsComImagem });
+validarSite(site, areasDeServico, { imagens: idsComImagem, avaliacoes, textos: { pt: textos, es: textosEs } });
 
 let template = await readFile(path.join(dist, 'index.html'), 'utf8');
 
-for (const marker of ['<!--app-head-->', '<!--app-html-->']) {
+/** O <html> do index.html: o idioma de cada página entra aqui. */
+const HTML_LANG = '<html lang="pt-BR">';
+for (const marker of ['<!--app-head-->', '<!--app-html-->', HTML_LANG]) {
   if (!template.includes(marker)) throw new Error(`Marcador ${marker} não encontrado em dist/index.html`);
 }
 
@@ -117,33 +124,43 @@ function extractImagePreloads(appHtml) {
   return { body, links };
 }
 
-/** @param {'home' | '404'} page */
-function buildPage(page) {
-  const { body, links } = extractImagePreloads(render(page));
-  const head = [fontPreloads, ...links, renderHead(page, { ...deploy, ogImageVersion })]
+/**
+ * @param {'home' | '404'} page
+ * @param {'pt' | 'es'} [idioma]  O navegador sabe o idioma pelo <html lang> (src/main.jsx).
+ */
+function buildPage(page, idioma = 'pt') {
+  const { body, links } = extractImagePreloads(render(page, idioma));
+  const head = [fontPreloads, ...links, renderHead(page, { ...deploy, ogImageVersion }, idioma)]
     .filter(Boolean)
     .join('\n    ');
   let html = template
+    .replace(HTML_LANG, () => `<html lang="${idiomas[idioma].lang}">`)
     .replace('<!--app-head-->', () => head)
     .replace('<!--app-html-->', () => body);
   if (page === '404') html = html.replace('<div id="root">', '<div id="root" data-page="404">');
   return html;
 }
 
-const homeHtml = buildPage('home');
-await writeFile(path.join(dist, 'index.html'), homeHtml);
+for (const { id, caminho } of listaDeIdiomas) {
+  await mkdir(path.join(dist, caminho), { recursive: true });
+  await writeFile(path.join(dist, caminho, 'index.html'), buildPage('home', id));
+}
 await writeFile(path.join(dist, '404.html'), buildPage('404'));
 
 // 5. Sitemap, robots e manifest ---------------------------------------------
 // Sem <lastmod>: a data do build mudaria a cada push e na republicação anual do copyright,
 // e o Google ignora lastmod que não reflete mudanças reais de conteúdo.
+// Cada página lista as versões nos dois idiomas (as mesmas do <link rel="alternate"> do head).
+const urlDe = (i) => `${deploy.siteUrl}${i.caminho}`;
+const versoes = [
+  ...listaDeIdiomas.map((i) => `    <xhtml:link rel="alternate" hreflang="${i.lang}" href="${urlDe(i)}"/>`),
+  `    <xhtml:link rel="alternate" hreflang="x-default" href="${urlDe(idiomas.pt)}"/>`,
+].join('\n');
 await writeFile(
   path.join(dist, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${deploy.siteUrl}</loc>
-  </url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${listaDeIdiomas.map((i) => `  <url>\n    <loc>${urlDe(i)}</loc>\n${versoes}\n  </url>`).join('\n')}
 </urlset>
 `,
 );

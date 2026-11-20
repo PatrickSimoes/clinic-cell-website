@@ -1,13 +1,12 @@
 import { House, MessageCircle } from 'lucide-react';
-import { textos } from '../content/textos.js';
+import { useIdioma } from '../lib/idioma.js';
 import { Icon } from '../components/Icon.jsx';
 import { SectionLabel } from '../components/SectionLabel.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
 
-const t = textos.naoEncontrada;
-
 /** Página 404 (dist/404.html): o GitHub Pages a exibe para endereços inexistentes. */
 export function NotFoundPage() {
+  const t = useIdioma().textos.naoEncontrada;
   return (
     <section className="not-found" aria-labelledby="nf-title">
       <div className="container grid">

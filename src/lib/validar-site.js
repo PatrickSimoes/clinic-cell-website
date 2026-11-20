@@ -1,5 +1,7 @@
 /**
- * Confere os dados editados à mão (src/config/site.js e src/content/servicos.js).
+ * Confere os dados editados à mão: src/config/site.js, src/content/servicos.js,
+ * src/content/avaliacoes.js e a tradução para o espanhol (src/content/textos.es.js tem de ter a
+ * mesma estrutura de textos.js; serviços e mensagens do WhatsApp, a tradução de cada um).
  *
  * Roda no build (scripts/prerender.mjs) e no verify (scripts/verify-dist.mjs): um erro
  * de digitação — dia "quartas", horário "9h", telefone com um dígito trocado, o mesmo dia em
@@ -12,6 +14,14 @@ import { DIAS, indiceDoDia } from './contact.js';
 
 const HORA = /^([01]\d|2[0-3]):[0-5]\d$/;
 const ID_DE_SERVICO = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MES = /^\d{4}-(0[1-9]|1[0-2])$/;
+const ORIGENS_DE_AVALIACAO = ['google', 'whatsapp'];
+/**
+ * Chaves dos textos que não são traduzidas: o valor precisa ser igual nos dois idiomas.
+ * Nos links (`link`), `whatsapp` é a chave da mensagem e `secao` o id da seção de destino.
+ */
+const chaveFixa = (caminho, chave) =>
+  chave === 'id' || chave === 'icone' || (caminho.endsWith('.link') && (chave === 'whatsapp' || chave === 'secao'));
 
 const digitos = (texto) => String(texto ?? '').replace(/\D/g, '');
 
@@ -23,14 +33,51 @@ const semNonoDigito = (d) => (d.length === 13 && d.startsWith('55') && d[4] === 
 
 const vazio = (valor) => typeof valor !== 'string' || !valor.trim();
 
+const tipoDe = (v) => (Array.isArray(v) ? 'lista' : v === null ? 'null' : typeof v);
+const NOME_DO_TIPO = { lista: 'uma lista', object: 'um grupo de textos', string: 'um texto', function: 'uma função', boolean: 'sim/não', number: 'um número', null: 'vazio', undefined: 'ausente' };
+
+/**
+ * Diferenças entre a estrutura dos textos em português e em espanhol: chave que falta ou sobra,
+ * lista com outro número de itens, texto vazio só em espanhol, id diferente.
+ * @returns {string[]}
+ */
+function diferencasDeEstrutura(pt, es, caminho) {
+  const tPt = tipoDe(pt);
+  const tEs = tipoDe(es);
+  if (tPt !== tEs) return [`${caminho}: em português é ${NOME_DO_TIPO[tPt]}, em espanhol é ${NOME_DO_TIPO[tEs]}.`];
+  if (tPt === 'lista') {
+    const erros = pt.length !== es.length ? [`${caminho}: ${pt.length} item(ns) em português e ${es.length} em espanhol.`] : [];
+    pt.slice(0, es.length).forEach((v, i) => erros.push(...diferencasDeEstrutura(v, es[i], `${caminho}[${i}]`)));
+    return erros;
+  }
+  if (tPt === 'object') {
+    const erros = [];
+    for (const chave of Object.keys(pt)) {
+      if (!(chave in es)) erros.push(`falta ${caminho}.${chave} em espanhol.`);
+      else if (chaveFixa(caminho, chave) && pt[chave] !== es[chave]) {
+        erros.push(`${caminho}.${chave}: "${es[chave]}" em espanhol, "${pt[chave]}" em português (precisa ser igual).`);
+      } else erros.push(...diferencasDeEstrutura(pt[chave], es[chave], `${caminho}.${chave}`));
+    }
+    for (const chave of Object.keys(es)) {
+      if (!(chave in pt)) erros.push(`${caminho}.${chave} existe só em espanhol.`);
+    }
+    return erros;
+  }
+  if (tPt === 'string' && !vazio(pt) && vazio(es)) return [`${caminho} está vazio em espanhol.`];
+  return [];
+}
+
 /**
  * Lista os problemas encontrados (lista vazia = tudo certo).
  * @param {typeof import('../config/site.js').site} site
  * @param {typeof import('../content/servicos.js').areasDeServico} [areas]
- * @param {{ imagens?: string[] }} [opcoes] ids com imagem em src/assets/servicos (src/lib/imagens-de-servico.js).
+ * @param {object} [opcoes]
+ * @param {string[]} [opcoes.imagens]  ids com imagem em src/assets/servicos (src/lib/imagens-de-servico.js).
+ * @param {typeof import('../content/avaliacoes.js').avaliacoes} [opcoes.avaliacoes]
+ * @param {{ pt: object, es: object }} [opcoes.textos]  textos.js e textos.es.js, para comparar as estruturas.
  * @returns {string[]}
  */
-export function problemasNosDados(site, areas = [], { imagens } = {}) {
+export function problemasNosDados(site, areas = [], { imagens, avaliacoes = [], textos } = {}) {
   const erros = [];
 
   // WhatsApp: os três campos precisam descrever o mesmo número.
@@ -48,6 +95,10 @@ export function problemasNosDados(site, areas = [], { imagens } = {}) {
   }
   for (const [chave, mensagem] of Object.entries(w.mensagens ?? {})) {
     if (vazio(mensagem)) erros.push(`whatsapp.mensagens.${chave} está vazia.`);
+    if (vazio(w.mensagensEs?.[chave])) erros.push(`whatsapp.mensagensEs.${chave} (a mensagem em espanhol) está vazia ou faltando.`);
+  }
+  for (const chave of Object.keys(w.mensagensEs ?? {})) {
+    if (!(chave in (w.mensagens ?? {}))) erros.push(`whatsapp.mensagensEs.${chave} existe só em espanhol (falta em whatsapp.mensagens).`);
   }
 
   // Endereço e mapa.
@@ -155,10 +206,53 @@ export function problemasNosDados(site, areas = [], { imagens } = {}) {
       });
     }
     if (typeof a?.confirmado !== 'boolean') erros.push(`${onde}: confirmado precisa ser true ou false (sem aspas).`);
+    // Tradução para o espanhol: mesmo número de serviços, na mesma ordem.
+    if (!a?.es || typeof a.es !== 'object') {
+      erros.push(`${onde}: falta a tradução para o espanhol (es: { nome, servicos, mensagemWhatsApp }).`);
+    } else {
+      for (const chave of ['nome', 'mensagemWhatsApp']) {
+        if (vazio(a.es[chave])) erros.push(`${onde}: es.${chave} (em espanhol) está vazio.`);
+      }
+      const total = Array.isArray(a?.servicos) ? a.servicos.length : 0;
+      if (!Array.isArray(a.es.servicos) || a.es.servicos.length !== total) {
+        erros.push(`${onde}: es.servicos precisa ter a tradução de cada serviço, na mesma ordem (${total} serviço(s)).`);
+      } else {
+        a.es.servicos.forEach((nome, j) => {
+          if (vazio(nome)) erros.push(`${onde}: a tradução do serviço ${j + 1} está vazia.`);
+        });
+      }
+    }
     if (imagens && ID_DE_SERVICO.test(a?.id ?? '') && !imagens.includes(a.id)) {
       erros.push(`${onde}: falta a imagem src/assets/servicos/${a.id}.svg (ou .webp/.jpg).`);
     }
   });
+
+  // Avaliações de clientes.
+  const idsDeAvaliacao = new Set();
+  (Array.isArray(avaliacoes) ? avaliacoes : []).forEach((a, i) => {
+    const onde = `avaliacoes[${i}]${a?.id ? ` (${a.id})` : ''}`;
+    if (!ID_DE_SERVICO.test(a?.id ?? '')) {
+      erros.push(`${onde}: o id precisa ter só letras minúsculas sem acento, números e hífens (ex.: "maria-2026-03").`);
+    } else if (idsDeAvaliacao.has(a.id)) {
+      erros.push(`${onde}: id repetido.`);
+    } else {
+      idsDeAvaliacao.add(a.id);
+    }
+    if (vazio(a?.nome)) erros.push(`${onde}: falta o nome (como o cliente autorizou aparecer).`);
+    if (vazio(a?.texto)) erros.push(`${onde}: falta o texto da avaliação.`);
+    if (!ORIGENS_DE_AVALIACAO.includes(a?.origem)) erros.push(`${onde}: origem precisa ser 'google' ou 'whatsapp'.`);
+    if (a?.nota != null) {
+      if (!Number.isInteger(a.nota) || a.nota < 1 || a.nota > 5) erros.push(`${onde}: nota precisa ser um número inteiro de 1 a 5 (sem aspas).`);
+      else if (a.origem !== 'google') erros.push(`${onde}: nota só existe nas avaliações do Google.`);
+    }
+    if (a?.data != null && !MES.test(a.data)) erros.push(`${onde}: data "${a.data}" inválida: use "AAAA-MM", ex.: "2026-03".`);
+    if (typeof a?.permissao !== 'boolean') erros.push(`${onde}: permissao precisa ser true ou false (sem aspas).`);
+  });
+
+  // Textos em espanhol com a mesma estrutura dos em português.
+  if (textos) {
+    erros.push(...diferencasDeEstrutura(textos.pt, textos.es, 'textos').map((e) => `src/content/textos.es.js: ${e}`));
+  }
 
   return erros;
 }
@@ -171,7 +265,8 @@ export function validarSite(...args) {
   const erros = problemasNosDados(...args);
   if (erros.length) {
     throw new Error(
-      `Dados inválidos em src/config/site.js ou src/content/servicos.js — corrija antes de publicar:\n  - ${erros.join('\n  - ')}`,
+      'Dados inválidos em src/config/site.js, src/content/servicos.js, src/content/avaliacoes.js ou ' +
+        `src/content/textos.es.js — corrija antes de publicar:\n  - ${erros.join('\n  - ')}`,
     );
   }
 }

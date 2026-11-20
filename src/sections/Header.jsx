@@ -1,13 +1,14 @@
 import { Menu, MessageCircle } from 'lucide-react';
-import { site } from '../config/site.js';
-import { secoes } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
+import { useIdioma } from '../lib/idioma.js';
 import { Icon } from '../components/Icon.jsx';
+import { LanguageLink } from '../components/LanguageLink.jsx';
 import { Logo } from '../components/Logo.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
 
 /**
- * Header: logo + navegação + "Orçamento pelo WhatsApp" (desktop) / botão "Menu" (celular).
+ * Header: logo + navegação + idioma + "Orçamento pelo WhatsApp" (desktop) / idioma + botão
+ * "Menu" (celular). O link de idioma ("ES" na página em português, "PT" na em espanhol) fica
+ * sempre à vista: o header é fixo.
  * Até o React assumir a página (html.is-hydrated) — ou sem JavaScript — o botão "Menu"
  * dá lugar a um link com o mesmo visual para a navegação do rodapé.
  *
@@ -19,6 +20,7 @@ import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
  * @param {boolean} props.inert
  */
 export function Header({ homeHref, hrefFor, menuOpen, onOpenMenu, inert }) {
+  const { textos, secoes, mensagens } = useIdioma();
   return (
     <header className="site-header" inert={inert}>
       <div className="container site-header__inner">
@@ -34,19 +36,23 @@ export function Header({ homeHref, hrefFor, menuOpen, onOpenMenu, inert }) {
 
         <nav className="site-header__nav" aria-label={textos.header.navegacaoAria}>
           <ul className="site-header__nav-list" role="list">
-            {secoes.map((secao) => (
-              <li key={secao.id}>
-                <a className="site-header__nav-link" href={hrefFor(secao.id)}>
-                  {secao.nome}
-                </a>
-              </li>
-            ))}
+            {secoes
+              .filter((secao) => !secao.foraDoHeader)
+              .map((secao) => (
+                <li key={secao.id} className={secao.headerLargo ? 'site-header__nav-item--largo' : undefined}>
+                  <a className="site-header__nav-link" href={hrefFor(secao.id)}>
+                    {secao.nome}
+                  </a>
+                </li>
+              ))}
           </ul>
         </nav>
 
+        <LanguageLink className="site-header__lang" />
+
         <WhatsAppLink
           className="button button--whatsapp button--small site-header__cta"
-          mensagem={site.whatsapp.mensagens.orcamento}
+          mensagem={mensagens.orcamento}
         >
           <Icon icon={MessageCircle} />
           {textos.header.cta}

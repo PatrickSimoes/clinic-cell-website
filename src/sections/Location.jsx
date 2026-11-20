@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CarFront, Check, Clock, Copy, MapPin, MessageCircle, Navigation } from 'lucide-react';
 import { site } from '../config/site.js';
-import { nomeDaSecao } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
 import {
   directionsUrl,
   formatAddress,
@@ -12,20 +10,21 @@ import {
   mapsUrl,
   wazeUrl,
 } from '../lib/contact.js';
+import { useIdioma } from '../lib/idioma.js';
 import { ExternalLink } from '../components/ExternalLink.jsx';
 import { Ficha, FichaRow } from '../components/Ficha.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { SectionLabel } from '../components/SectionLabel.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
 
-const t = textos.localizacao;
-const novaAba = textos.global.novaAba;
-
 /** Localização: endereço com "Nº 2884", ficha, kit "como chegar" e mapa do Google. */
 export function Location() {
+  const { textos, mensagens, idioma } = useIdioma();
+  const t = textos.localizacao;
+  const novaAba = textos.global.novaAba;
   const endereco = formatAddress();
-  const horarios = formatHours();
-  const fechados = formatClosedDays();
+  const horarios = formatHours(idioma.id);
+  const fechados = formatClosedDays(idioma.id);
   // Mensagem da região de anúncio. Cada anúncio ganha um número novo (n): o nó é trocado
   // e o leitor de tela anuncia de novo, mesmo com o texto repetido.
   const [anuncio, setAnuncio] = useState({ texto: '', visivel: false, n: 0 });
@@ -43,7 +42,7 @@ export function Location() {
   return (
     <section className="section location has-spine" id="localizacao" aria-labelledby="loc-title" tabIndex={-1}>
       <div className="container grid">
-        <SectionLabel>{nomeDaSecao('localizacao')}</SectionLabel>
+        <SectionLabel>{textos.secoes.localizacao}</SectionLabel>
         <h2 className="section-title location__title" id="loc-title">
           {t.titulo}
         </h2>
@@ -51,7 +50,7 @@ export function Location() {
         <div className="location__info">
           <address>
             <span className="location__number" aria-hidden="true">
-              <span className="location__number-kicker">Nº</span>
+              <span className="location__number-kicker">{t.numero}</span>
               <span className="location__number-value">{site.endereco.numero}</span>
             </span>
             <span className="location__street">
@@ -92,7 +91,7 @@ export function Location() {
                   <br />
                   <WhatsAppLink
                     className="link link--tap link--whatsapp"
-                    mensagem={site.whatsapp.mensagens.horario}
+                    mensagem={mensagens.horario}
                     srText={`${t.confirmarHorarioOculto} (${novaAba})`}
                   >
                     {t.confirmarHorario}
@@ -197,6 +196,7 @@ async function copiarTexto(texto) {
  * @param {{ texto: string, onAnuncio: (mensagem: string, opcoes?: { visivel?: boolean }) => void }} props
  */
 function CopyAddressButton({ texto, onAnuncio }) {
+  const t = useIdioma().textos.localizacao;
   const [estado, setEstado] = useState(/** @type {'idle' | 'ok' | 'erro'} */ ('idle'));
   const timer = useRef(/** @type {ReturnType<typeof setTimeout> | undefined} */ (undefined));
   const ultimoPedido = useRef(0);
@@ -241,6 +241,7 @@ function CopyAddressButton({ texto, onAnuncio }) {
  * Sem JavaScript a caixa não aparece (o botão "Abrir no Google Maps" continua ali).
  */
 function GoogleMap() {
+  const { textos, idioma } = useIdioma();
   const caixa = useRef(/** @type {HTMLDivElement | null} */ (null));
   const [perto, setPerto] = useState(false);
 
@@ -261,8 +262,8 @@ function GoogleMap() {
     <div className="location__map requires-js" ref={caixa}>
       <iframe
         className="location__map-frame"
-        src={perto ? mapaIncorporadoUrl() : undefined}
-        title={t.mapa.titulo}
+        src={perto ? mapaIncorporadoUrl(idioma.id) : undefined}
+        title={textos.localizacao.mapa.titulo}
         allowFullScreen
       />
     </div>

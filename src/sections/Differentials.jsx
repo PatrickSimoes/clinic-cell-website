@@ -1,24 +1,24 @@
 import { CircuitBoard, MessageCircle, ShieldCheck, Store } from 'lucide-react';
 import { site } from '../config/site.js';
-import { nomeDaSecao } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
+import { useIdioma } from '../lib/idioma.js';
 import { Icon } from '../components/Icon.jsx';
 import { Pad } from '../components/Pad.jsx';
 import { SectionLabel } from '../components/SectionLabel.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
 
 const ICONES = { CircuitBoard, MessageCircle, ShieldCheck, Store };
-const t = textos.diferenciais;
 
 /**
  * Diferenciais: só afirmações verificáveis, ligadas por um barramento de circuito.
  * @param {{ hrefFor: (id: string) => string }} props
  */
 export function Differentials({ hrefFor }) {
+  const { textos } = useIdioma();
+  const t = textos.diferenciais;
   return (
     <section className="section diffs has-spine" id="diferenciais" aria-labelledby="dif-title" tabIndex={-1}>
       <div className="container grid">
-        <SectionLabel>{nomeDaSecao('diferenciais')}</SectionLabel>
+        <SectionLabel>{textos.secoes.diferenciais}</SectionLabel>
         <h2 className="section-title diffs__title" id="dif-title">
           {t.titulo}
         </h2>

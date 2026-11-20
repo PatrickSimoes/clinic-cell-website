@@ -2,7 +2,7 @@
 
 Site institucional da **ClinicCell**, assistência técnica de celulares desde 2011, com atendimento no bairro Iná, em São José dos Pinhais (PR).
 
-O site é uma página única, pensada primeiro para o celular. O objetivo é levar o visitante ao WhatsApp e aparecer nas buscas locais. Ele é publicado de graça no **GitHub Pages**, sem servidor e sem banco de dados.
+O site é uma página única, pensada primeiro para o celular, em **português** (na raiz do endereço) e em **espanhol** (em `/es/`, para o público venezuelano e de outros países hispânicos). O objetivo é levar o visitante ao WhatsApp e aparecer nas buscas locais. Ele é publicado de graça no **GitHub Pages**, sem servidor e sem banco de dados.
 
 - **Stack:** React 19 + JavaScript + Vite 8.
 - **HTML pronto no build.** O HTML de cada página é gerado no build, com o conteúdo completo, para o Google e para as prévias de link do WhatsApp. Depois, o React assume a página no navegador (hidratação).
@@ -68,12 +68,13 @@ Todos os textos e dados ficam em **dois lugares**, `src/config/` e `src/content/
 | O que mudar | Onde |
 |---|---|
 | Nome, WhatsApp, endereço, CEP, coordenadas, mapa, horários, redes sociais | `src/config/site.js` |
-| Mensagens pré-preenchidas do WhatsApp (por contexto) | `src/config/site.js` → `whatsapp.mensagens` |
-| Serviços (áreas, lista de serviços, mensagem do WhatsApp, confirmação) | `src/content/servicos.js` |
+| Mensagens pré-preenchidas do WhatsApp (por contexto) | `src/config/site.js` → `whatsapp.mensagens` (português) e `whatsapp.mensagensEs` (espanhol) |
+| Serviços (áreas, lista de serviços, mensagem do WhatsApp, confirmação) | `src/content/servicos.js` (a tradução de cada área fica em `es`) |
 | Imagem de cada área de serviço | `src/assets/servicos/<id da área>.svg` (ou uma foto `.webp`/`.jpg`) |
-| Textos das seções (hero, destaques, serviços, sobre, diferenciais, localização, dúvidas, CTA, rodapé, 404) | `src/content/textos.js` |
-| Title e description | `src/content/seo.js` |
-| Seções do menu (ordem e nomes) | `src/content/secoes.js` |
+| Textos das seções (hero, destaques, serviços, sobre, diferenciais, avaliações, localização, dúvidas, CTA, rodapé, 404) | `src/content/textos.js` (português) e `src/content/textos.es.js` (espanhol) |
+| Avaliações de clientes | `src/content/avaliacoes.js` |
+| Title e description | `src/content/seo.js` (português) e `src/content/seo.es.js` (espanhol) |
+| Seções do menu (ordem) | `src/content/secoes.js` (os nomes ficam nos textos de cada idioma, em `secoes`) |
 
 **O build confere o preenchimento desses dados.** Estes erros fazem o build falhar com uma mensagem dizendo o que corrigir, e o site não é publicado:
 - um dia da semana inválido ou repetido;
@@ -85,7 +86,9 @@ Todos os textos e dados ficam em **dois lugares**, `src/config/` e `src/content/
 - uma área sem nome, sem mensagem do WhatsApp ou com a lista de serviços vazia;
 - o mesmo serviço escrito duas vezes, na mesma área ou em áreas diferentes;
 - `confirmado` com aspas (`'true'` em vez de `true`);
-- uma área sem imagem em `src/assets/servicos/`.
+- uma área sem imagem em `src/assets/servicos/`;
+- uma tradução faltando: um texto de `textos.js` sem o equivalente em `textos.es.js` (ou o contrário), uma mensagem do WhatsApp sem a versão em espanhol, ou uma área de serviço sem `es` ou com um número diferente de serviços traduzidos;
+- uma avaliação mal preenchida: `id` repetido, sem nome ou texto, origem que não seja `'google'` ou `'whatsapp'`, nota fora de 1 a 5, data fora do formato `"AAAA-MM"` ou `permissao` com aspas.
 
 O build não sabe se um dado está **certo**: um número errado digitado igual nos três campos passa. Confira telefone e horários antes de publicar.
 
@@ -123,9 +126,10 @@ O agrupamento e a ordem dentro de cada área são só organização da página. 
 - `nome`: o título da linha na tabela (H3);
 - `servicos`: a lista dos serviços, na ordem em que aparecem;
 - `mensagemWhatsApp`: a mensagem pronta do link "Pedir orçamento" da área;
-- `confirmado`: `true` só depois de confirmado pelo proprietário. Hoje as 5 áreas estão com `true`.
+- `confirmado`: `true` só depois de confirmado pelo proprietário. Hoje as 5 áreas estão com `true`;
+- `es`: a tradução para a página em espanhol, com `nome`, `servicos` (na mesma ordem e na mesma quantidade) e `mensagemWhatsApp`.
 
-**Para incluir um serviço**, escreva o nome na lista `servicos` da área certa. **Para criar uma área**, copie uma, troque `id`, `nome`, `servicos` e `mensagemWhatsApp` e coloque a imagem dela em `src/assets/servicos/` (ver abaixo).
+**Para incluir um serviço**, escreva o nome na lista `servicos` da área certa e a tradução, na mesma posição, em `es.servicos`. **Para criar uma área**, copie uma, troque `id`, `nome`, `servicos`, `mensagemWhatsApp` e `es`, e coloque a imagem dela em `src/assets/servicos/` (ver abaixo).
 
 O que acontece com cada valor de `confirmado`:
 - **`true`**: a área aparece na tabela de serviços, com a imagem, a lista e o link verde "Pedir orçamento", e entra nos dados estruturados (um catálogo `OfferCatalog` por área, dentro de `hasOfferCatalog`, com os serviços dela). A contagem da faixa de destaques ("25 serviços") e a resposta "Quais serviços a ClinicCell faz?" das Dúvidas se atualizam sozinhas.
@@ -157,7 +161,7 @@ Além dos dados de `src/config/site.js`, dos textos do briefing e da lista de se
 
 A descrição também fala em "atendimento rápido". O site não usa essa expressão, porque é uma promessa de prazo.
 
-Os horários também estão confirmados (os do Perfil no Google, em `src/config/site.js`). Ainda **não** podem aparecer: prazos, preços, "peças originais", "orçamento grátis", nota no Google, número de aparelhos atendidos, "laboratório próprio" e avaliações de clientes. Cada um está em `docs/pendencias.md`.
+Os horários também estão confirmados (os do Perfil no Google, em `src/config/site.js`). Ainda **não** podem aparecer: prazos, preços, "peças originais", "orçamento grátis", nota no Google, número de aparelhos atendidos e "laboratório próprio". Avaliações de clientes só as reais, com permissão ([Avaliações de clientes](#avaliações-de-clientes)). Cada pendência está em `docs/pendencias.md`.
 
 ### Destaques e Dúvidas frequentes
 
@@ -174,7 +178,7 @@ O ícone é o nome de um ícone do `lucide-react`; um ícone novo também precis
 **Dúvidas frequentes** (seção "Dúvidas", entre Localização e Contato): `src/content/textos.js` → `duvidas`. São 11 perguntas, que abrem e fecham sem JavaScript: orçamento, garantia, marcas, parcelamento, serviços, celular que molhou, celular que não liga, troca só do vidro, acessórios, endereço e horário.
 - Só respostas com fatos confirmados. Prazo e preço entram quando o proprietário confirmar.
 - Três respostas se atualizam sozinhas: a dos serviços (total e áreas, de `servicos.js`), a do endereço (de `site.js`) e a do horário ("Segunda a sexta, das 9h às 19h, e sábado, das 9h às 16h. Domingo, fechado.", montada a partir de `horarios`; com `horarios: null`, "Confirme pelo WhatsApp antes de vir.").
-- O link no fim de uma resposta é `link.whatsapp`, com o nome de uma mensagem de `site.whatsapp.mensagens` (link verde), ou `link.secao`, com o `id` de uma seção da página.
+- O link no fim de uma resposta é `link.whatsapp`, com o nome de uma mensagem de `site.whatsapp.mensagens` (link verde; na página em espanhol, a de `mensagensEs` com o mesmo nome), ou `link.secao`, com o `id` de uma seção da página.
 
 ### Horários e redes sociais
 
@@ -202,7 +206,40 @@ Para incluir uma foto real na seção "Sobre" (as fotos dos serviços estão em 
 1. Salve o arquivo como `src/assets/fotos/sobre.webp`. Também são aceitos `.jpg`, `.png` e `.avif`. Use proporção 4:3, com cerca de 1200 × 900 px.
 2. Preencha `alt` (obrigatório: o `verify` reprova a foto sem descrição) e `legenda` em `src/content/textos.js` → `sobre.foto`, descrevendo só o que aparece na foto.
 
-Sem o arquivo, nada é exibido. Com ele, a foto também entra nos dados estruturados. Não use foto de banco de imagens.
+Sem o arquivo, nada é exibido. Com ele, a foto também entra nos dados estruturados. Não use foto de banco de imagens. Preencha `alt` e `legenda` também em `src/content/textos.es.js` → `sobre.foto` (a página em espanhol mostra a mesma foto).
+
+### Avaliações de clientes
+
+A seção "Avaliações" fica entre Diferenciais e Localização. As avaliações ficam em `src/content/avaliacoes.js` → `avaliacoes`, e **só entram as reais**: o texto exatamente como o cliente escreveu (no Google ou no WhatsApp) e com a permissão dele para publicar.
+
+```js
+{
+  id: 'maria-2026-03',        // único: letras minúsculas sem acento, números e hífens
+  nome: 'Maria S.',           // como o cliente autorizou aparecer
+  texto: 'Texto exatamente como a cliente escreveu.',
+  origem: 'google',           // 'google' ou 'whatsapp'
+  nota: 5,                    // opcional: estrelas do Google, de 1 a 5
+  data: '2026-03',            // opcional: mês da avaliação
+  permissao: true,            // true só depois que o cliente autorizou
+},
+```
+
+- **Sem nenhuma avaliação** (hoje): a seção mostra só o convite "Já é cliente da ClinicCell?" com o botão "Avaliar no Google", que abre a página de avaliação da loja no Google (montada com o Place ID de `site.mapa.placeId`).
+- **Com avaliações:** o título vira "O que dizem os clientes da ClinicCell", as avaliações aparecem em linhas (duas colunas no computador), as mais recentes primeiro, e o botão continua no fim.
+- Avaliação com `permissao: false` não aparece. A seção entra no menu e no rodapé, mas não no header do computador (falta espaço).
+- Na página em espanhol, o texto da avaliação continua em português, como o cliente escreveu, e a introdução avisa isso.
+- A nota não entra nos dados estruturados: o Google não mostra estrelas de avaliações que o próprio negócio publica sobre si.
+
+### Espanhol (página `/es/`)
+
+O site tem duas páginas iniciais com o mesmo conteúdo: português na raiz (`/`) e espanhol em `/es/`. O link **"ES"** no header (sempre à vista) leva à página em espanhol, e o **"PT"** de lá volta ao português. A 404 é só em português.
+
+- **Textos:** `src/content/textos.es.js` tem a mesma estrutura de `textos.js`. Ao mudar ou acrescentar um texto em português, faça o mesmo em espanhol: o build falha se faltar ou sobrar algum.
+- **Serviços:** a tradução de cada área fica nela mesma, em `es` (ver [Serviços](#serviços-áreas-e-lista-do-proprietário)).
+- **WhatsApp:** na página em espanhol, todas as mensagens prontas vão em espanhol (`site.whatsapp.mensagensEs` e `es.mensagemWhatsApp` de cada área). O cliente envia no idioma que está lendo.
+- **SEO:** `src/content/seo.es.js` (title e description). As duas páginas se apontam como versões uma da outra (`hreflang` no `<head>` e no `sitemap.xml`), e cada uma tem os dados estruturados no seu idioma.
+- **Estilo:** espanhol neutro da América Latina, tratando por "tú", com palavras comuns na Venezuela ("celular", "equipo", "falla", "presupuesto"). Os horários aparecem como "Lunes a viernes · 9:00 a 19:00".
+- `npm run dev` mostra a página em espanhol em `http://localhost:5173/es/`.
 
 ---
 
@@ -322,7 +359,7 @@ Mudanças só em arquivos `.md` ou em `docs/` não republicam o site.
      1. salve o arquivo baixado (`google....html`) em `public/`, sem renomear;
      2. faça push e espere o deploy;
      3. clique em **Verificar**.
-   - Depois, envie o sitemap: `https://<endereço-do-site>/sitemap.xml`.
+   - Depois, envie o sitemap: `https://<endereço-do-site>/sitemap.xml`. Ele já lista as duas páginas (português e espanhol).
 
    O Google só lê o `robots.txt` na raiz do endereço (ex.: `https://cliniccell.github.io/robots.txt`). Num subcaminho ele não vale, mas o envio do sitemap pelo Search Console resolve.
 2. **Perfil da Empresa no Google** do ponto "ClinicCell". Detalhes do estado atual em `docs/pendencias.md`, item 4:
@@ -331,7 +368,7 @@ Mudanças só em arquivos `.md` ou em `docs/` não republicam o site.
 3. **Avaliações:** depois de cada atendimento, o proprietário pode enviar pelo WhatsApp o link de avaliação no Google:
    `https://search.google.com/local/writereview?placeid=ChIJXWmYfJrx3JQRzvMjdIG0urE`.
    Não ofereça desconto ou brinde em troca e não peça só a clientes satisfeitos: as regras do Google proíbem.
-   Nota e avaliações só aparecem no site depois de confirmadas (`docs/pendencias.md`, itens 7 e 10).
+   O mesmo link está no botão "Avaliar no Google" da seção Avaliações. Avaliações só aparecem no site com a permissão do cliente ([Avaliações de clientes](#avaliações-de-clientes)); a nota no Google, depois de confirmada (`docs/pendencias.md`, item 7).
 4. **Valide os dados estruturados** em [Rich Results Test](https://search.google.com/test/rich-results) e [validator.schema.org](https://validator.schema.org) com a URL publicada.
 5. **Teste a prévia de link:** mande o endereço numa conversa do WhatsApp. A imagem e o título devem aparecer.
 
@@ -341,23 +378,24 @@ Mudanças só em arquivos `.md` ou em `docs/` não republicam o site.
 
 **Em todo deploy e pull request (CI):**
 - `npm run lint`;
-- `npm run build`, que interrompe o build se os dados de `site.js` ou `servicos.js` estiverem mal preenchidos, inclusive se uma área de serviço estiver sem imagem;
-- `npm run verify`, que confere:
-  - dados editados à mão (WhatsApp, endereço, CEP, horários, redes sociais, serviços);
-  - title e description;
-  - canonical e Open Graph com URL absoluta, imagem existente, atualizada (telefone e endereço) e igual à registrada em `scripts/og-image.dados.json`;
+- `npm run build`, que interrompe o build se os dados de `site.js`, `servicos.js` ou `avaliacoes.js` estiverem mal preenchidos, inclusive se uma área de serviço estiver sem imagem ou se faltar uma tradução para o espanhol;
+- `npm run verify`, que confere, nas páginas em português e em espanhol:
+  - dados editados à mão (WhatsApp, endereço, CEP, horários, redes sociais, serviços, avaliações e a tradução);
+  - `lang` da página, title e description no idioma certo;
+  - canonical, versões em outros idiomas (`hreflang`) e Open Graph com URL absoluta, imagem existente, atualizada (telefone e endereço) e igual à registrada em `scripts/og-image.dados.json`;
   - CSS embutido e preload da fonte principal;
   - um único H1 e hierarquia de títulos;
   - `alt`, `width` e `height` das imagens (e descrição obrigatória na foto real);
   - texto sem "NaN", "undefined" ou "[object Object]";
   - âncoras internas;
-  - todos os links do WhatsApp (número e mensagem);
-  - links do Maps, da rota e do Waze;
+  - todos os links do WhatsApp (número e mensagem no idioma da página);
+  - links do Maps, da rota, do Waze e de troca de idioma;
   - mapa do Google: único iframe da página, com título e sem `src` no HTML (não carrega na abertura), com endereço apontando para o CID do ponto;
-  - JSON-LD (LocalBusiness com endereço, telefone e coordenadas; um catálogo por área, com os mesmos nomes de área e de serviço das áreas confirmadas);
+  - JSON-LD (LocalBusiness com endereço, telefone e coordenadas; um catálogo por área, com os mesmos nomes de área e de serviço das áreas confirmadas, no idioma da página; sem nota nem avaliações);
   - serviços: cada área confirmada publicada, com os serviços na ordem do cadastro, e nenhuma área não confirmada no HTML;
+  - avaliações: só as com permissão, e o link "Avaliar no Google";
   - 404 com `noindex`;
-  - sitemap, robots e manifest;
+  - sitemap (as duas páginas, com as versões em outros idiomas), robots e manifest;
   - HTML válido (html-validate).
 - `npm run qa` com o Chrome do servidor do GitHub. Por enquanto é **informativo**: uma falha aparece no log, mas não bloqueia a publicação.
 
@@ -366,7 +404,10 @@ Mudanças só em arquivos `.md` ou em `docs/` não republicam o site.
   - 9 larguras de tela, de 320 a 1920 px, sem rolagem horizontal;
   - erros de console ou de hidratação e requisições a terceiros na abertura da página;
   - mapa do Google, trocado por uma página local mínima (o QA não depende da rede): com título, no ponto da loja (CID) e carregado só perto da Localização, nem na abertura nem a duas telas de distância;
-  - todo botão ou link que abre o WhatsApp em verde (home e 404);
+  - todo botão ou link que abre o WhatsApp em verde (home em português e em espanhol, e 404);
+  - página em espanhol: larguras de tela, erros, axe, mensagens do WhatsApp em espanhol e troca de idioma nos dois sentidos;
+  - header do computador numa linha só (1024, 1100 e 1280 px, nos dois idiomas);
+  - seção Avaliações com o link "Avaliar no Google" e no menu;
   - axe-core no topo da página, com a barra fixa do WhatsApp visível, com o menu aberto e depois do "Copiar endereço";
   - teclado, "pular para o conteúdo" e alvos de toque;
   - menu mobile: abrir, Esc, devolução do foco, âncoras, foco na seção escolhida e tablet e celular girados com o menu aberto, sem perder o trecho que se lia;
@@ -395,7 +436,7 @@ Para rodar `qa` e `lighthouse` com o mesmo base path do build, use `BASE_PATH=no
 docs/                          briefing original, design system, pendências com o proprietário
 public/                        favicons, ícones, og-image.jpg, logo pública (copiados como estão)
 scripts/
-  prerender.mjs                valida os dados e gera o HTML final, 404, sitemap, robots e manifest
+  prerender.mjs                valida os dados e gera o HTML final (português e espanhol), 404, sitemap, robots e manifest
   deploy-env.mjs               URL pública e base path (SITE_URL / BASE_PATH)
   verify-dist.mjs              verificações do build (CI)
   qa-browser.mjs, lighthouse.mjs   QA no navegador
@@ -405,10 +446,10 @@ scripts/
   lib/                         busca do Chrome/Edge e dados da og-image (compartilhados)
 src/
   config/      dados comerciais (site.js) e ano do build
-  content/     textos, serviços, seções e SEO
-  lib/         links de contato, validação dos dados, áreas publicadas, imagens dos serviços, dados estruturados, <head>, ano atual
+  content/     textos (português e .es.js em espanhol), idiomas, serviços, avaliações, seções e SEO
+  lib/         links de contato, validação dos dados, conteúdo de cada idioma (conteudo.js, idioma.js), áreas e avaliações publicadas, imagens dos serviços, dados estruturados, <head>, ano atual
   components/  peças reutilizáveis (Logo, links, ficha, ícones, terminais do circuito)
-  sections/    Header, Hero, Destaques, Serviços, Sobre, Diferenciais, Localização, Dúvidas, CTA, Rodapé, menu, barra fixa do WhatsApp
+  sections/    Header, Hero, Destaques, Serviços, Sobre, Diferenciais, Avaliações, Localização, Dúvidas, CTA, Rodapé, menu, barra fixa do WhatsApp
   layouts/     estrutura comum (header fixo, menu, foco, barra fixa do WhatsApp)
   pages/       página inicial e 404
   styles/      fontes, tokens, base, layout, motivo de circuito, componentes e um arquivo por seção
@@ -421,8 +462,8 @@ src/
 1. `vite build` gera JS e CSS para o navegador.
 2. `vite build --ssr` gera o renderizador.
 3. `scripts/prerender.mjs`:
-   - confere os dados de `site.js` e `servicos.js`, inclusive se cada área de serviço tem imagem;
-   - monta `dist/index.html` e `dist/404.html` com o conteúdo completo e o `<head>` de SEO;
+   - confere os dados de `site.js`, `servicos.js` e `avaliacoes.js` e a tradução para o espanhol, inclusive se cada área de serviço tem imagem;
+   - monta `dist/index.html`, `dist/es/index.html` e `dist/404.html` com o conteúdo completo e o `<head>` de SEO (o idioma vai no `<html lang>`, e o navegador o lê de lá);
    - embute o CSS (pequeno) no HTML e faz preload da fonte do título;
    - versiona a URL da imagem de compartilhamento.
 

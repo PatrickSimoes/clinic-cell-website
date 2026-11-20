@@ -1,13 +1,10 @@
 import { ArrowDown, MessageCircle } from 'lucide-react';
-import { site } from '../config/site.js';
-import { textos } from '../content/textos.js';
+import { useIdioma } from '../lib/idioma.js';
 import { Icon } from '../components/Icon.jsx';
 import { Logo } from '../components/Logo.jsx';
 import { Pad } from '../components/Pad.jsx';
 import { StackedLabel } from '../components/StackedLabel.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
-
-const t = textos.hero;
 
 /**
  * Primeira dobra: o quê (H1 + subtítulo), onde (rótulo com bairro e cidade) e como
@@ -16,6 +13,8 @@ const t = textos.hero;
  * @param {{ hasServices: boolean }} props  Sem serviços publicados, o link secundário leva à Localização.
  */
 export function Hero({ hasServices }) {
+  const { textos, mensagens } = useIdioma();
+  const t = textos.hero;
   return (
     <section className="hero has-spine" id="inicio" aria-labelledby="hero-title">
       <div className="container grid hero__grid">
@@ -36,7 +35,7 @@ export function Hero({ hasServices }) {
           <div className="hero__actions">
             <WhatsAppLink
               className="button button--whatsapp hero__cta"
-              mensagem={site.whatsapp.mensagens.orcamento}
+              mensagem={mensagens.orcamento}
               data-hero-cta=""
             >
               <Icon icon={MessageCircle} />
@@ -50,14 +49,17 @@ export function Hero({ hasServices }) {
           </div>
         </div>
 
-        <BrandPlate />
+        <BrandPlate alt={textos.logoAlt.plano} />
       </div>
     </section>
   );
 }
 
-/** Plano da marca: o azul do campo da logo, com a logo original e as trilhas de circuito. */
-function BrandPlate() {
+/**
+ * Plano da marca: o azul do campo da logo, com a logo original e as trilhas de circuito.
+ * @param {{ alt: string }} props
+ */
+function BrandPlate({ alt }) {
   return (
     <div className="brand-plate">
       <BrandTraces />
@@ -70,7 +72,7 @@ function BrandPlate() {
           width={232}
           sizes="(min-width: 92.875rem) 26rem, (min-width: 64em) 28vw, (min-width: 48em) 20rem, (max-width: 386px) 60vw, 232px"
           className="brand-plate__logo"
-          alt={textos.logoAlt.plano}
+          alt={alt}
         />
       </div>
     </div>

@@ -1,6 +1,7 @@
 /**
  * Textos de SEO (title, description, Open Graph) por página.
  * Title ideal: até ~60 caracteres. Description: entre 120 e 160 caracteres.
+ * A versão em espanhol fica em src/content/seo.es.js; imagem, logo e cor são as mesmas.
  */
 import { site } from '../config/site.js';
 
@@ -28,6 +29,8 @@ export const seo = {
   },
   /** Logo quadrada original, pública, usada nos dados estruturados (public/brand/cliniccell-logo.png). */
   logoPath: 'brand/cliniccell-logo.png',
+  /** Nome do catálogo de serviços nos dados estruturados. */
+  catalogo: 'Serviços de assistência técnica de celulares',
   /** Descrição da empresa nos dados estruturados. */
   businessDescription: `Assistência técnica de celulares desde ${site.anoFundacao}, com garantia de 90 dias nos serviços. Conserto de iPhone, Samsung, Motorola e outras marcas. Loja no bairro ${bairro}, em ${cidade} (${uf}).`,
   /** Cor da barra do navegador no celular — branca, como o header. */

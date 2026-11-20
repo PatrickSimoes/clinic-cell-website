@@ -1,21 +1,20 @@
 import { site } from '../config/site.js';
-import { nomeDaSecao } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
 import { useAnoAtual } from '../lib/ano.js';
 import { fotoSobreUrl as fotoUrl } from '../lib/foto-sobre.js';
+import { useIdioma } from '../lib/idioma.js';
 import { Pad } from '../components/Pad.jsx';
 import { SectionLabel } from '../components/SectionLabel.jsx';
 
-const t = textos.sobre;
-
 /** Sobre: "Desde 2011" em escala + régua com um traço por ano até hoje. */
 export function About() {
+  const { textos } = useIdioma();
+  const t = textos.sobre;
   const anos = Math.max(1, useAnoAtual() - site.anoFundacao);
 
   return (
     <section className="section about has-spine" id="sobre" aria-labelledby="sobre-title" tabIndex={-1}>
       <div className="container grid">
-        <SectionLabel>{nomeDaSecao('sobre')}</SectionLabel>
+        <SectionLabel>{textos.secoes.sobre}</SectionLabel>
         <h2 className="about__title" id="sobre-title">
           <span className="about__kicker">{t.kicker} </span>
           <span className="about__year">{site.anoFundacao}</span>

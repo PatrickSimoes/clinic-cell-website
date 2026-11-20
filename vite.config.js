@@ -48,6 +48,7 @@ export default defineConfig(({ isSsrBuild }) => {
 /**
  * Em `npm run dev`, injeta no index.html o mesmo <head> gerado no build
  * (title, meta tags, Open Graph, JSON-LD), para conferir SEO localmente.
+ * Em http://localhost:5173/es/ a página sai em espanhol (o <html lang> diz o idioma ao React).
  * @returns {import('vite').Plugin}
  */
 function devHead() {
@@ -59,16 +60,21 @@ function devHead() {
     configureServer(s) {
       server = s;
     },
-    async transformIndexHtml(html) {
-      const { renderHead, problemasNosDados, site, areasDeServico, idsComImagem } =
+    async transformIndexHtml(html, ctx) {
+      const { renderHead, problemasNosDados, site, areasDeServico, avaliacoes, textos, textosEs, idsComImagem } =
         await server.ssrLoadModule('/src/entry-server.jsx');
       // Avisa já no `npm run dev` o que faria o build falhar (dia inválido, telefone incoerente...).
-      for (const problema of problemasNosDados(site, areasDeServico, { imagens: idsComImagem })) {
+      const opcoes = { imagens: idsComImagem, avaliacoes, textos: { pt: textos, es: textosEs } };
+      for (const problema of problemasNosDados(site, areasDeServico, opcoes)) {
         server.config.logger.warn(`[dados] ${problema}`, { timestamp: true });
       }
       const port = server.config.server.port ?? 5173;
       const deploy = resolveDeployEnv({ ...process.env, SITE_URL: `http://localhost:${port}` });
-      return html.replace('<!--app-head-->', renderHead('home', deploy));
+      const caminho = new URL(ctx.originalUrl ?? ctx.path, 'http://x').pathname;
+      const idioma = caminho.startsWith(`${server.config.base}es/`) ? 'es' : 'pt';
+      return html
+        .replace('<html lang="pt-BR">', idioma === 'es' ? '<html lang="es">' : '<html lang="pt-BR">')
+        .replace('<!--app-head-->', renderHead('home', deploy, idioma));
     },
   };
 }

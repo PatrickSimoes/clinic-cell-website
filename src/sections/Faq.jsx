@@ -1,14 +1,11 @@
 import { Plus } from 'lucide-react';
 import { site } from '../config/site.js';
-import { nomeDaSecao } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
 import { formatClosedDays, formatHours } from '../lib/contact.js';
-import { areasPublicadas } from '../lib/services.js';
+import { useIdioma } from '../lib/idioma.js';
+import { totalDeServicos } from '../lib/services.js';
 import { Icon } from '../components/Icon.jsx';
 import { SectionLabel } from '../components/SectionLabel.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
-
-const t = textos.duvidas;
 
 /**
  * Dúvidas frequentes: perguntas que abrem e fecham (<details>), sem depender de JavaScript.
@@ -17,12 +14,14 @@ const t = textos.duvidas;
  * só empurra as perguntas da mesma coluna. No celular, as colunas viram uma lista só.
  */
 export function Faq() {
+  const { textos, areas, idioma } = useIdioma();
+  const t = textos.duvidas;
   const dados = {
-    areas: areasPublicadas,
-    totalServicos: areasPublicadas.reduce((total, area) => total + area.servicos.length, 0),
+    areas,
+    totalServicos: totalDeServicos,
     endereco: site.endereco,
-    horarios: formatHours(),
-    fechados: formatClosedDays(),
+    horarios: formatHours(idioma.id),
+    fechados: formatClosedDays(idioma.id),
   };
   const perguntas = t.perguntas.filter((p) => p.id !== 'servicos' || dados.totalServicos > 0);
   const metade = Math.ceil(perguntas.length / 2);
@@ -31,7 +30,7 @@ export function Faq() {
   return (
     <section className="section faq has-spine" id="duvidas" aria-labelledby="faq-title" tabIndex={-1}>
       <div className="container grid">
-        <SectionLabel>{nomeDaSecao('duvidas')}</SectionLabel>
+        <SectionLabel>{textos.secoes.duvidas}</SectionLabel>
         <h2 className="section-title" id="faq-title">
           {t.titulo}
         </h2>
@@ -65,12 +64,10 @@ export function Faq() {
 
 /** @param {{ link: { rotulo: string, whatsapp?: string, secao?: string } }} props */
 function FaqLink({ link }) {
+  const { mensagens } = useIdioma();
   if (link.whatsapp) {
     return (
-      <WhatsAppLink
-        className="link link--whatsapp"
-        mensagem={site.whatsapp.mensagens[link.whatsapp]}
-      >
+      <WhatsAppLink className="link link--whatsapp" mensagem={mensagens[link.whatsapp]}>
         {link.rotulo}
       </WhatsAppLink>
     );

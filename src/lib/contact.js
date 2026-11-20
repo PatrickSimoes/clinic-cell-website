@@ -38,13 +38,23 @@ export function mapsUrl() {
 /**
  * Mapa do Google para incorporar na página (iframe), centrado no ponto da ClinicCell.
  * Usa o CID do ponto (mostra a ficha "ClinicCell"); sem ele, nome + endereço. Não precisa de chave de API.
+ * @param {'pt' | 'es'} [idioma]  Idioma dos textos do mapa.
  */
-export function mapaIncorporadoUrl() {
+export function mapaIncorporadoUrl(idioma = 'pt') {
   const e = site.endereco;
   const alvo = site.mapa.cid
     ? `cid=${site.mapa.cid}`
     : `q=${encodeURIComponent(`${site.nome}, ${e.logradouro}, ${e.numero} - ${e.bairro}, ${e.cidade} - ${e.uf}`)}`;
-  return `https://maps.google.com/maps?${alvo}&z=16&hl=pt-BR&output=embed`;
+  return `https://maps.google.com/maps?${alvo}&z=16&hl=${idioma === 'es' ? 'es' : 'pt-BR'}&output=embed`;
+}
+
+/**
+ * Página do Google onde o cliente escreve uma avaliação da loja (precisa do Place ID), ou `null`.
+ * É o mesmo link que o proprietário pode mandar pelo WhatsApp depois de cada atendimento.
+ */
+export function avaliarNoGoogleUrl() {
+  const placeId = site.mapa.placeId;
+  return placeId ? `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}` : null;
 }
 
 /**
@@ -85,49 +95,74 @@ export function indiceDoDia(dia) {
   return DIAS.findIndex(([d]) => d === id);
 }
 
-/** "09:00" → "9h"; "09:30" → "9h30" */
-function formatTime(hhmm) {
-  const [h, m] = hhmm.split(':');
-  return `${Number(h)}h${m && m !== '00' ? m : ''}`;
+/** Nomes dos dias em espanhol, na ordem de DIAS. */
+const DIAS_ES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+/**
+ * Como cada idioma escreve dias e horas.
+ * pt: "Segunda a sexta", "Sábado e domingo", "9h às 19h", "9h30"
+ * es: "Lunes a viernes", "Sábado y domingo", "9:00 a 19:00", "9:30"
+ */
+const FORMATO = {
+  pt: {
+    dia: (i) => DIAS[i][1],
+    e: 'e',
+    hora: (h, m) => `${h}h${m !== '00' ? m : ''}`,
+    faixa: (abre, fecha) => `${abre} às ${fecha}`,
+  },
+  es: {
+    dia: (i) => DIAS_ES[i],
+    e: 'y',
+    hora: (h, m) => `${h}:${m}`,
+    faixa: (abre, fecha) => `${abre} a ${fecha}`,
+  },
+};
+
+/** "09:00" → "9h" (pt) ou "9:00" (es); "09:30" → "9h30" ou "9:30" */
+function formatTime(hhmm, f) {
+  const [h, m = '00'] = hhmm.split(':');
+  return f.hora(Number(h), m);
 }
 
 /** ['segunda', ..., 'sexta'] → "Segunda a sexta"; ['sabado', 'domingo'] → "Sábado e domingo" */
-function formatDays(dias) {
+function formatDays(dias, f) {
   const order = dias
     .map(indiceDoDia)
     .filter((i) => i >= 0)
     .sort((a, b) => a - b);
-  const label = (i) => DIAS[i][1];
   const consecutive = order.every((v, i) => i === 0 || v === order[i - 1] + 1);
   if (order.length >= 3 && consecutive) {
-    return `${label(order[0])} a ${label(order.at(-1)).toLowerCase()}`;
+    return `${f.dia(order[0])} a ${f.dia(order.at(-1)).toLowerCase()}`;
   }
-  const names = order.map((i, n) => (n === 0 ? label(i) : label(i).toLowerCase()));
-  return names.length > 1 ? `${names.slice(0, -1).join(', ')} e ${names.at(-1)}` : (names[0] ?? '');
+  const names = order.map((i, n) => (n === 0 ? f.dia(i) : f.dia(i).toLowerCase()));
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} ${f.e} ${names.at(-1)}` : (names[0] ?? '');
 }
 
 /**
  * Horários formatados para exibição, ou `null` se ainda não foram confirmados.
  * Nunca calcule "aberto agora": o site é estático e o horário pode ter exceções.
+ * @param {'pt' | 'es'} [idioma]
  * @returns {{ dias: string, horario: string }[] | null}
  */
-export function formatHours() {
+export function formatHours(idioma = 'pt') {
   if (!site.horarios?.length) return null;
+  const f = FORMATO[idioma] ?? FORMATO.pt;
   return site.horarios.map((h) => ({
-    dias: formatDays(h.dias),
-    horario: `${formatTime(h.abre)} às ${formatTime(h.fecha)}`,
+    dias: formatDays(h.dias, f),
+    horario: f.faixa(formatTime(h.abre, f), formatTime(h.fecha, f)),
   }));
 }
 
 /**
  * Dias sem horário (fechados), já formatados ("Domingo"), ou `null` se todo dia abre ou se os
  * horários ainda não foram informados.
+ * @param {'pt' | 'es'} [idioma]
  */
-export function formatClosedDays() {
+export function formatClosedDays(idioma = 'pt') {
   if (!site.horarios?.length) return null;
   const abertos = new Set(site.horarios.flatMap((h) => h.dias.map(indiceDoDia)));
   const fechados = DIAS.filter((_, i) => !abertos.has(i)).map(([id]) => id);
-  return fechados.length ? formatDays(fechados) : null;
+  return fechados.length ? formatDays(fechados, FORMATO[idioma] ?? FORMATO.pt) : null;
 }
 
 /** Horários no formato Schema.org (OpeningHoursSpecification), ou `null`. */

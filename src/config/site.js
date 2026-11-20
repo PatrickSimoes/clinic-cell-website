@@ -69,6 +69,24 @@ export const site = {
       contato:
         'Olá! Encontrei a ClinicCell pelo site e preciso de ajuda com o meu celular.\nModelo do aparelho: ',
     },
+    /**
+     * As mesmas mensagens em espanhol, usadas na página /es/: o cliente envia no idioma que está
+     * lendo. Precisam ter as mesmas chaves de `mensagens` (o build confere).
+     * (As mensagens de cada serviço em espanhol ficam em src/content/servicos.js → `es`.)
+     */
+    mensagensEs: {
+      geral:
+        '¡Hola! Encontré ClinicCell en la página web y quisiera información sobre el servicio técnico para mi celular.',
+      orcamento:
+        '¡Hola! Encontré ClinicCell en la página web y quisiera pedir un presupuesto para mi celular.\nModelo del equipo: ',
+      defeito:
+        '¡Hola! Encontré ClinicCell en la página web y quiero describir la falla de mi celular.\nModelo del equipo y lo que pasó: ',
+      horario:
+        '¡Hola! Vi la dirección de ClinicCell en la página web y quisiera confirmar el horario de atención antes de ir.',
+      acessorios: '¡Hola! Encontré ClinicCell en la página web y quisiera saber sobre accesorios.\nLo que busco: ',
+      contato:
+        '¡Hola! Encontré ClinicCell en la página web y necesito ayuda con mi celular.\nModelo del equipo: ',
+    },
   },
 
   endereco: {

@@ -10,15 +10,24 @@ Os detalhes técnicos estão no [README](README.md), no [design system](docs/des
 
 ## 1. Levar o projeto
 
-- **A pasta não é um repositório git.** Nada está salvo no GitHub ainda: a única cópia é esta pasta.
-- Copie a pasta `website` inteira, **sem** `node_modules`, `dist`, `dist-ssr` e `qa-output`. Essas quatro são geradas de novo.
-- Não esqueça os arquivos ocultos (começam com ponto). `.github/` tem a publicação automática; `.nvmrc`, `.gitignore` e `.htmlvalidate.json` também vão junto. O `CLAUDE.md` (regras para o Claude) também.
-- **Recomendado:** aproveitar a troca para criar o repositório no GitHub. Ele vai ser necessário para publicar no GitHub Pages ([README, seção 3](README.md#3-publicar-no-github-pages)). Assim o projeto deixa de existir numa máquina só.
+- O projeto está no GitHub: `github.com/PatrickSimoes/clinic-cell-website` (branch `main`).
+- Numa máquina nova, basta clonar: `git clone git@github.com:PatrickSimoes/clinic-cell-website.git`.
+  `node_modules`, `dist`, `dist-ssr` e `qa-output` não vão para o GitHub: são gerados de novo.
 
 ## 2. Preparar a máquina nova
 
 1. Instale o **Node 24** (está no `.nvmrc`; também serve 22.22 ou mais novo).
 2. Tenha o **Chrome ou o Edge** instalado: os testes no navegador e a imagem de compartilhamento usam um deles. Se estiver num lugar diferente do normal, informe o caminho em `CHROME_PATH`.
+   - **Linux ou WSL:** o Chrome do Windows não serve. Instale o Chrome dentro do Linux:
+
+     ```bash
+     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+     sudo apt install ./google-chrome-stable_current_amd64.deb
+     ```
+
+   - Evite o `chrome-headless-shell` do Playwright (`~/.cache/ms-playwright`): com ele, em 20/11/2026,
+     o teste "nenhum foco escondido" falhou (voltando com Shift+Tab, o mapa fica fora da tela). Com o
+     Chrome normal, no computador anterior, o mesmo teste passava.
 3. Python só é necessário se for refazer as fontes (`npm run fonts:subset`).
 4. Na pasta do projeto:
 
@@ -26,7 +35,7 @@ Os detalhes técnicos estão no [README](README.md), no [design system](docs/des
    npm ci           # instala exatamente as versões do package-lock
    npm run check    # lint + build + verificação do site pronto
    npm run qa       # testes no navegador (uns 3 minutos)
-   npm run dev      # site em http://localhost:5173
+   npm run dev      # site em http://localhost:5173 (espanhol em http://localhost:5173/es/)
    ```
 
 5. Resultado esperado:
@@ -44,10 +53,11 @@ Os detalhes técnicos estão no [README](README.md), no [design system](docs/des
   - nota no Google;
   - número de aparelhos atendidos;
   - "laboratório próprio";
-  - avaliações de clientes;
+  - avaliações de clientes inventadas ou sem permissão (só entram as reais, autorizadas pelo cliente, em `src/content/avaliacoes.js`);
   - prazo e preço;
   - "atendimento rápido": a loja escreveu no Google, mas é promessa de prazo e ficou de fora.
 - **Todo botão ou link que abre o WhatsApp é verde.** O teste no navegador reprova se algum não for.
+- **Dois idiomas: português e espanhol.** Todo texto novo entra nos dois (`textos.js` e `textos.es.js`; serviços com `es`; mensagens do WhatsApp com `mensagensEs`). Na página em espanhol, a mensagem do WhatsApp vai em espanhol: o cliente envia no idioma que está lendo (pedido do Patrick, 20/11/2026). O build falha se faltar uma tradução.
 - **Tecnologia:** React + JavaScript + Vite, decisão do Patrick. Não migrar para TypeScript, Next ou Astro.
 - **Commits e PRs só no nome do Patrick:** Patrick Simões <patricksimoes25@gmail.com>. Nada de "Co-Authored-By: Claude" nem menção a IA.
 - **Conversa:** português simples, sem termos técnicos. O Patrick repassa ao dono da loja o que mudou na tela.
@@ -56,15 +66,17 @@ Os detalhes técnicos estão no [README](README.md), no [design system](docs/des
 
 ## 4. Como o site está hoje
 
-Página única, nesta ordem:
+Página única, em português (`/`) e em espanhol (`/es/`), nesta ordem:
 
 | Parte | O que tem |
 |---|---|
+| Barra do topo (fixa) | Logo, navegação, link **"ES"** (ou **"PT"** na página em espanhol) para trocar de idioma e, no computador, o botão verde do WhatsApp. Entre 1024 e 1279 px o item "Contato" sai da navegação, por falta de espaço (o botão verde ao lado faz o papel dele). |
 | Topo | Título, botão verde "Solicitar orçamento" e o bloco azul só com a logo (sem endereço nem telefone, a pedido). |
 | Faixa de destaques | 90 dias de garantia · iPhone e Android · 25 serviços · Parcelamento no cartão. |
 | Serviços | 5 áreas e 25 serviços, cada área com uma ilustração e o link verde "Pedir orçamento" com mensagem própria. |
 | Sobre | "Desde 2011". |
 | Diferenciais | "Por que escolher a ClinicCell": garantia, do simples ao avançado, loja física no Iná, orçamento pelo WhatsApp. |
+| Avaliações | Hoje, só o convite "Já é cliente da ClinicCell?" com o botão "Avaliar no Google". Quando entrarem avaliações reais, elas aparecem aqui. Fica no menu e no rodapé, não na barra do topo. |
 | Localização | Endereço, WhatsApp, horários, botões de rota e o mapa do Google, que só carrega quando a pessoa chega perto. |
 | Dúvidas | 11 perguntas que abrem e fecham; 2 colunas no computador. |
 | Contato | Chamada final com botão verde. |
@@ -75,10 +87,11 @@ No celular, uma **barra verde fixa embaixo** ("Solicitar orçamento pelo WhatsAp
 
 | Quero mudar | Arquivo |
 |---|---|
-| Telefone, endereço, horários, mensagens do WhatsApp | `src/config/site.js` |
-| Serviços (nomes, áreas, mensagem de cada área) | `src/content/servicos.js` |
-| Textos (topo, destaques, diferenciais, dúvidas…) | `src/content/textos.js` |
-| Título e descrição para o Google | `src/content/seo.js` |
+| Telefone, endereço, horários, mensagens do WhatsApp | `src/config/site.js` (em espanhol: `whatsapp.mensagensEs`) |
+| Serviços (nomes, áreas, mensagem de cada área) | `src/content/servicos.js` (em espanhol: `es` de cada área) |
+| Textos (topo, destaques, diferenciais, dúvidas…) | `src/content/textos.js` (em espanhol: `src/content/textos.es.js`) |
+| Avaliações de clientes | `src/content/avaliacoes.js` (modelo no próprio arquivo e no [README](README.md#avaliações-de-clientes)) |
+| Título e descrição para o Google | `src/content/seo.js` (em espanhol: `src/content/seo.es.js`) |
 | Imagem de uma área de serviço | `src/assets/servicos/<id>.svg`. Uma foto real `<id>.webp` na mesma pasta tem prioridade. |
 
 Cuidados:
@@ -86,7 +99,8 @@ Cuidados:
 - **Mudou o horário no Google?** Mude também em `site.js`: o cliente vê os dois.
 - **Ilustrações dos serviços:** são desenhadas por `npm run servicos:ilustracoes` (`scripts/ilustracoes-servicos.mjs`). Rodar de novo sobrescreve os `.svg`.
 - `npm run qa` apaga e recria a pasta `qa-output/` (fotos das telas dos testes).
-- O build falha, com mensagem em português, se `site.js` ou `servicos.js` estiver mal preenchido. Por exemplo: dia da semana errado, horário fora do formato, serviço repetido ou área sem imagem.
+- **Mudou ou acrescentou um texto?** Faça o mesmo na versão em espanhol.
+- O build falha, com mensagem em português, se `site.js`, `servicos.js` ou `avaliacoes.js` estiver mal preenchido, ou se faltar uma tradução. Por exemplo: dia da semana errado, horário fora do formato, serviço repetido, área sem imagem, texto sem a versão em espanhol ou avaliação com nota fora de 1 a 5.
 
 ## 6. O que falta
 
@@ -95,13 +109,16 @@ Detalhes e "onde alterar" de cada item em [docs/pendencias.md](docs/pendencias.m
 **Antes de publicar**
 - [ ] Testar no celular se os botões de WhatsApp abrem a conversa da ClinicCell (número `wa.me/554195079359`).
 - [ ] Decidir o endereço do site. Domínio próprio, como `cliniccell.com.br`, é o recomendado. Decida antes de cadastrar o site no Perfil do Google.
-- [ ] Criar o repositório no GitHub e fazer a primeira publicação ([README, seção 3](README.md#3-publicar-no-github-pages)).
+- [x] Criar o repositório no GitHub e enviar o código (feito em 20/11/2026).
+- [ ] Ativar o Pages (Settings → Pages → Source: **GitHub Actions**) e rodar de novo o workflow "Publicar no GitHub Pages" ([README, seção 3](README.md#3-publicar-no-github-pages)). Em 20/11/2026 o site ainda não estava no ar.
 
 **Pedir à loja**
 - [ ] Nota e link das avaliações no Google, para entrar na faixa de destaques.
 - [ ] Quantos aparelhos já foram atendidos (aproximado, como "+5.000").
 - [ ] Se tem "laboratório próprio".
-- [ ] Avaliações reais de clientes: nome e texto, com permissão (e foto, se quiserem). A seção de avaliações ainda **não existe**: será feita quando chegarem.
+- [ ] Avaliações reais de clientes: texto, como o nome pode aparecer e a permissão de cada um. A seção já existe (hoje só com o convite para avaliar no Google): é só preencher `src/content/avaliacoes.js`.
+- [ ] Se a loja consegue atender em espanhol. Hoje o site não promete isso, mas a página em espanhol manda as mensagens do WhatsApp em espanhol.
+- [ ] Pedir a alguém que fale espanhol (de preferência venezuelano) para ler a página `/es/` antes de divulgar.
 - [ ] Prazo e preço, se quiserem nas Dúvidas.
 - [ ] Fotos reais dos serviços (opcional): substituem as ilustrações.
 - [ ] Redes sociais oficiais (Instagram etc.).
@@ -122,3 +139,9 @@ Detalhes e "onde alterar" de cada item em [docs/pendencias.md](docs/pendencias.m
 - Botão do WhatsApp no celular virou barra fixa embaixo.
 - Novas seções: faixa de destaques, "Por que escolher a ClinicCell" (reescrita) e Dúvidas frequentes.
 - Revisão independente feita e corrigida. Todos os testes passando no fim do dia.
+
+**Depois, ainda em 20/11/2026 (máquina nova):**
+- Versão em espanhol em `/es/`, com o link "ES"/"PT" na barra do topo. Todos os textos, serviços, dúvidas e mensagens do WhatsApp traduzidos. Para o Google, as duas páginas se apontam como versões uma da outra.
+- Seção "Avaliações" entre Diferenciais e Localização: hoje só o convite com o botão "Avaliar no Google"; as avaliações reais entram por `src/content/avaliacoes.js`.
+- "Contato" sai da barra do topo entre 1024 e 1279 px (faltou espaço com o link de idioma).
+- `npm run check`: "✓ Tudo certo, 2 aviso(s)". `npm run qa` nesta máquina: tudo certo menos o teste "nenhum foco escondido", que já falhava antes das mudanças com o navegador de testes simplificado (ver seção 2).

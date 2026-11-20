@@ -1,17 +1,14 @@
 import { ArrowUp, ArrowUpRight } from 'lucide-react';
 import { site } from '../config/site.js';
-import { secoes } from '../content/secoes.js';
-import { textos } from '../content/textos.js';
 import { useAnoAtual } from '../lib/ano.js';
 import { formatAddress, mapsUrl } from '../lib/contact.js';
 import { cx } from '../lib/cx.js';
+import { useIdioma } from '../lib/idioma.js';
 import { ExternalLink } from '../components/ExternalLink.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { Logo } from '../components/Logo.jsx';
 import { Pad } from '../components/Pad.jsx';
 import { WhatsAppLink } from '../components/WhatsAppLink.jsx';
-
-const t = textos.rodape;
 
 /**
  * Rodapé (colofão): marca, endereço, WhatsApp, navegação e direitos autorais.
@@ -24,6 +21,8 @@ const t = textos.rodape;
  * @param {boolean} props.inert
  */
 export function Footer({ hrefFor, topHref, spine = true, inert }) {
+  const { textos, secoes } = useIdioma();
+  const t = textos.rodape;
   const endereco = formatAddress();
   const anoAtual = useAnoAtual();
   return (

@@ -8,10 +8,15 @@
  *
  * Só entram dados confirmados: horários, CEP, redes sociais e serviços aparecem
  * aqui automaticamente quando forem preenchidos/confirmados em src/config e src/content.
+ *
+ * Cada página (português e espanhol) descreve a mesma empresa (mesmo @id), com a descrição, os
+ * serviços e a página no idioma dela. O atendimento confirmado é em português
+ * (contactPoint.availableLanguage).
  */
 import { site } from '../config/site.js';
-import { areasPublicadas } from './services.js';
+import { listaDeIdiomas } from '../content/idiomas.js';
 import { seo } from '../content/seo.js';
+import { conteudoDoIdioma } from './conteudo.js';
 import { openingHoursSpecification, whatsappUrl } from './contact.js';
 import { fotoSobreUrl } from './foto-sobre.js';
 
@@ -33,8 +38,11 @@ export function ogImageUrl(siteUrl, version) {
  * @param {string} params.pageUrl  URL absoluta e canônica da página (com barra final).
  * @param {string} params.siteUrl  URL absoluta da raiz do site (com barra final).
  * @param {string} [params.ogImageVersion]  Hash da og-image (ver ogImageUrl).
+ * @param {'pt' | 'es'} [params.idioma]  Idioma da página.
  */
-export function buildStructuredData({ pageUrl, siteUrl, ogImageVersion }) {
+export function buildStructuredData({ pageUrl, siteUrl, ogImageVersion, idioma = 'pt' }) {
+  const conteudo = conteudoDoIdioma(idioma);
+  const textosSeo = conteudo.seo;
   const businessId = `${siteUrl}#empresa`;
   const websiteId = `${siteUrl}#site`;
   const logoUrl = new URL(seo.logoPath, siteUrl).href;
@@ -50,7 +58,7 @@ export function buildStructuredData({ pageUrl, siteUrl, ogImageVersion }) {
     '@id': businessId,
     name: site.nome,
     alternateName: site.nomeAlternativo,
-    description: seo.businessDescription,
+    description: textosSeo.businessDescription,
     url: siteUrl,
     logo: logoUrl,
     image: fotoUrl ? [fotoUrl, imageUrl, logoUrl] : [imageUrl, logoUrl],
@@ -80,18 +88,18 @@ export function buildStructuredData({ pageUrl, siteUrl, ogImageVersion }) {
       '@type': 'ContactPoint',
       contactType: 'customer service',
       telephone: site.whatsapp.internacional,
-      url: whatsappUrl(),
+      url: whatsappUrl(conteudo.mensagens.geral),
       availableLanguage: 'Portuguese',
     },
   };
 
   if (hours) business.openingHoursSpecification = hours;
   if (site.redesSociais.length) business.sameAs = site.redesSociais.map((r) => r.url);
-  if (areasPublicadas.length) {
+  if (conteudo.areas.length) {
     business.hasOfferCatalog = {
       '@type': 'OfferCatalog',
-      name: 'Serviços de assistência técnica de celulares',
-      itemListElement: areasPublicadas.map((area) => ({
+      name: textosSeo.catalogo,
+      itemListElement: conteudo.areas.map((area) => ({
         '@type': 'OfferCatalog',
         name: area.nome,
         itemListElement: area.servicos.map((nome) => ({
@@ -118,16 +126,16 @@ export function buildStructuredData({ pageUrl, siteUrl, ogImageVersion }) {
         name: site.nome,
         // Nome do site nos resultados do Google (só vale com o site na raiz de um domínio).
         alternateName: site.nomeAlternativo,
-        inLanguage: 'pt-BR',
+        inLanguage: listaDeIdiomas.map((i) => i.lang),
         publisher: { '@id': businessId },
       },
       {
         '@type': 'WebPage',
         '@id': `${pageUrl}#pagina`,
         url: pageUrl,
-        name: seo.home.title,
-        description: seo.home.description,
-        inLanguage: 'pt-BR',
+        name: textosSeo.home.title,
+        description: textosSeo.home.description,
+        inLanguage: conteudo.idioma.lang,
         isPartOf: { '@id': websiteId },
         about: { '@id': businessId },
         primaryImageOfPage: { '@type': 'ImageObject', url: imageUrl },
